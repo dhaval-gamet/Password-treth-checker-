@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phishing Website Checker System</title>
+  <!-- Import Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+  <!-- Import Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #e0eafc, #cfdef3);
+      color: #333;
+      padding: 20px;
+      margin: 0;
+      text-align: center;
+    }
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      animation: fadeIn 1s ease-in-out;
+      text-align: left;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h1, h2 {
+      color: #0056b3;
+      margin-bottom: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .section {
+      margin-top: 30px;
+    }
+    .section h3 {
+      color: #ff6600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .box {
+      background: #f9f9f9;
+      padding: 15px;
+      border-left: 5px solid #0056b3;
+      margin: 15px 0;
+      border-radius: 5px;
+      transition: transform 0.3s ease;
+    }
+    .box:hover {
+      transform: scale(1.02);
+    }
+    ul {
+      padding-left: 20px;
+      list-style: disc;
+    }
+    li {
+      margin: 10px 0;
+    }
+    .footer {
+      margin-top: 30px;
+      font-size: 14px;
+      color: #555;
+      border-top: 1px solid #ddd;
+      padding-top: 15px;
+      text-align: center;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+      h1, h2 {
+        font-size: 1.5em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><i class="fa-solid fa-fish"></i> Phishing Website Checker System</h1>
+    
+    <div class="section">
+      <h3><i class="fa-solid fa-info-circle"></i> Introduction</h3>
+      <div class="box">
+        <p>
+          Our Phishing Website Checker System is designed to detect and analyze fraudulent websites that attempt to steal user credentials or personal data. This system helps users identify phishing websites by checking multiple security parameters and warning them about potential threats.
+        </p>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h3><i class="fa-solid fa-gear"></i> How Does It Work?</h3>
+      <div class="box">
+        <p>
+          Our system scans a website’s URL, content, and security features to determine whether it is legitimate or a phishing attempt. It follows strict security rules, ensuring accurate detection while prioritizing user privacy.
+        </p>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h3><i class="fa-solid fa-list"></i> Features of Our Phishing Website Checker System:</h3>
+      <div class="box">
+        <ul>
+          <li>
+            <strong>1️⃣ URL Analysis:</strong>
+            <ul>
+              <li>Checks for suspicious patterns in the website’s URL.</li>
+              <li>Detects misspelled domains, extra characters, or misleading links.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>2️⃣ SSL Certificate Verification:</strong>
+            <ul>
+              <li>Confirms if the website has a valid SSL certificate (HTTPS).</li>
+              <li>Warns users if the website lacks encryption or has an expired certificate.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>3️⃣ Domain Age & Reputation Check:</strong>
+            <ul>
+              <li>Analyzes when the domain was registered.</li>
+              <li>Flags newly created domains, which are often used for phishing attacks.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>4️⃣ Content and Link Analysis:</strong>
+            <ul>
+              <li>Scans for fake login forms, misleading pop-ups, and hidden elements.</li>
+              <li>Detects if the website tries to imitate popular brands.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>5️⃣ Blacklist Database Comparison:</strong>
+            <ul>
+              <li>Cross-checks the website with a database of known phishing sites.</li>
+              <li>Alerts users if the site has been reported as fraudulent.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>6️⃣ JavaScript & Redirect Detection:</strong>
+            <ul>
+              <li>Identifies malicious scripts that steal user data.</li>
+              <li>Detects unexpected redirects to suspicious websites.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>7️⃣ Email and Pop-up Scanning:</strong>
+            <ul>
+              <li>Checks for deceptive emails linked to the website.</li>
+              <li>Identifies pop-ups that attempt to trick users into entering credentials.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>8️⃣ Real-Time Threat Detection:</strong>
+            <ul>
+              <li>Provides instant results on whether a website is safe or a phishing attempt.</li>
+              <li>Suggests necessary actions to protect user data.</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h3><i class="fa-solid fa-comment-dots"></i> How to Use the Phishing Website Checker System?</h3>
+      <div class="box">
+        <p>
+          ✔ Enter the website URL you want to verify.<br>
+          ✔ The system will analyze the URL, domain, and security features.<br>
+          ✔ If the website is suspicious, it will provide a warning and recommendations.<br>
+          ✔ Stay safe by avoiding unsafe websites and following security guidelines.
+        </p>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h3><i class="fa-solid fa-lock"></i> Security & Privacy Policy</h3>
+      <div class="box">
+        <ul>
+          <li>✅ Our system does not store or track user data.</li>
+          <li>✅ No personal information is collected during the scan.</li>
+          <li>✅ Follows the latest cybersecurity protocols.</li>
+          <li>✅ Works locally without relying on third-party APIs.</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h3><i class="fa-solid fa-bolt"></i> Conclusion</h3>
+      <div class="box">
+        <p>
+          This Phishing Website Checker System helps users stay protected from online scams, ensuring a safer browsing experience by identifying and blocking fraudulent websites before they can cause harm.
+        </p>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p><i class="fa-solid fa-shield-halved"></i> <strong>Stay Safe, Stay Secure!</strong> <i class="fa-solid fa-shield-halved"></i></p>
+    </div>
+  </div>
+</body>
+</html>

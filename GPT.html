@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secure Password Assistant Chatbot</title>
+  <!-- Import Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+  <!-- Import Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #e0eafc, #cfdef3);
+      color: #333;
+      padding: 20px;
+      margin: 0;
+      text-align: center;
+    }
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      animation: fadeIn 1s ease-in-out;
+      text-align: left;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h1, h2 {
+      color: #0056b3;
+      margin-bottom: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .section {
+      margin-top: 30px;
+    }
+    .section h3 {
+      color: #ff6600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .box {
+      background: #f9f9f9;
+      padding: 15px;
+      border-left: 5px solid #0056b3;
+      margin: 15px 0;
+      border-radius: 5px;
+      transition: transform 0.3s ease;
+    }
+    .box:hover {
+      transform: scale(1.02);
+    }
+    ul {
+      padding-left: 20px;
+      list-style: disc;
+    }
+    li {
+      margin: 10px 0;
+    }
+    .footer {
+      margin-top: 30px;
+      font-size: 14px;
+      color: #555;
+      border-top: 1px solid #ddd;
+      padding-top: 15px;
+      text-align: center;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+      h1, h2 {
+        font-size: 1.5em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><i class="fa-solid fa-robot"></i> Secure Password Assistant Chatbot</h1>
+    
+    <div class="section">
+      <h3><i class="fa-solid fa-info-circle"></i> Introduction</h3>
+      <div class="box">
+        <p>
+          Our chatbot is designed to provide expert guidance on password security, password management, and best practices to keep your accounts safe. It follows strict security rules and only offers reliable and privacy-friendly solutions.
+        </p>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h3><i class="fa-solid fa-gear"></i> How Does It Work?</h3>
+      <div class="box">
+        <p>
+          Our chatbot operates based on predefined security rules and database-driven responses to ensure that all password-related queries are answered accurately. It does not store or expose sensitive data and always follows encryption-based security principles.
+        </p>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h3><i class="fa-solid fa-list"></i> Features of Our Password Assistant Chatbot:</h3>
+      <div class="box">
+        <ul>
+          <li>
+            <strong>1️⃣ Password Strength Analysis:</strong>
+            <ul>
+              <li>Evaluates the strength of a password.</li>
+              <li>Suggests ways to improve weak passwords.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>2️⃣ Secure Password Generation:</strong>
+            <ul>
+              <li>Creates strong and unique passwords with uppercase, lowercase, numbers, and symbols.</li>
+              <li>Ensures passwords are resistant to brute-force attacks.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>3️⃣ Password Storage Guidelines:</strong>
+            <ul>
+              <li>Guides users on how to securely store passwords.</li>
+              <li>Recommends using encrypted password managers.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>4️⃣ Password Breach Detection:</strong>
+            <ul>
+              <li>Checks if a password has been leaked in previous data breaches.</li>
+              <li>Alerts users to change compromised passwords.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>5️⃣ Brute-Force Attack Time Estimation:</strong>
+            <ul>
+              <li>Calculates how long a hacker would take to crack a password using brute-force methods.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>6️⃣ Two-Factor Authentication (2FA) Suggestions:</strong>
+            <ul>
+              <li>Educates users on the importance of 2FA for added security.</li>
+              <li>Provides step-by-step instructions on enabling 2FA for different platforms.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>7️⃣ Security Best Practices:</strong>
+            <ul>
+              <li>Recommends do’s and don’ts for password security.</li>
+              <li>Explains phishing threats and how to avoid them.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>8️⃣ Privacy-Focused and No Data Storage:</strong>
+            <ul>
+              <li>The chatbot does not store any passwords or sensitive data.</li>
+              <li>All responses are generated in real-time based on pre-set security guidelines.</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h3><i class="fa-solid fa-comment-dots"></i> How to Use the Chatbot?</h3>
+      <div class="box">
+        <p>
+          Simply ask any question related to passwords or online security and get instant, reliable answers based on security best practices. Receive personalized suggestions to enhance your password safety.
+        </p>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h3><i class="fa-solid fa-lock"></i> Our Chatbot's Security Policy:</h3>
+      <div class="box">
+        <ul>
+          <li>✔ Does not store or share passwords.</li>
+          <li>✔ Only provides encryption-based and secure solutions.</li>
+          <li>✔ No tracking or personal data collection.</li>
+          <li>✔ Follows the latest cybersecurity guidelines.</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h3><i class="fa-solid fa-bolt"></i> Conclusion</h3>
+      <div class="box">
+        <p>
+          This chatbot is a powerful tool for individuals and businesses looking to improve their digital security without compromising privacy.
+        </p>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p><i class="fa-solid fa-shield-halved"></i> <strong>Stay Safe, Stay Secure!</strong> <i class="fa-solid fa-shield-halved"></i></p>
+    </div>
+  </div>
+</body>
+</html>

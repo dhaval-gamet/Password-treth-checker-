@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SecurePass Ultra | Meru Password Strength Checker</title>
+  <!-- Chart.js and Google Material Icons -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    /* CSS Variables for Color Palette & Themes */
+    :root {
+      --gradient-1: #FF6B6B; /* bright red */
+      --gradient-2: #FFD93D; /* sunny yellow */
+      --accent: #1FAB89;    /* vivid teal */
+      --background: #F0F8FF; /* light blue */
+      --text: #2C3E50;       /* dark blue-gray */
+      --card-bg: #FFFFFF;
+      --neumorph: 10px 10px 30px rgba(0,0,0,0.1),
+                 -10px -10px 30px rgba(255,255,255,0.7);
+      --transition-speed: 0.4s;
+    }
+    .dark-mode {
+      --background: #2C3E50;
+      --text: #ECF0F1;
+      --card-bg: #34495E;
+      --neumorph: 10px 10px 30px rgba(0,0,0,0.4),
+                 -10px -10px 30px rgba(255,255,255,0.1);
+    }
+    
+    /* Global Styles */
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background: var(--background);
+      color: var(--text);
+      transition: background var(--transition-speed) ease, color var(--transition-speed) ease;
+      scroll-behavior: smooth;
+      line-height: 1.6;
+    }
+    a {
+      text-decoration: none;
+    }
+    
+    /* Navigation */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      backdrop-filter: blur(16px);
+      background: linear-gradient(45deg, rgba(255,107,107,0.8), rgba(255,217,61,0.8));
+      box-shadow: 0 4px 30px rgba(0,0,0,0.2);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .navbar h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      color: var(--card-bg);
+    }
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+    }
+    .nav-links a {
+      color: var(--card-bg);
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+    .nav-links a:hover,
+    .nav-links a:focus {
+      color: var(--accent);
+      outline: none;
+    }
+    .theme-switcher {
+      cursor: pointer;
+      font-size: 1.8rem;
+      color: var(--card-bg);
+    }
+    
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 8rem 2rem;
+      background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+      color: var(--card-bg);
+      clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+      animation: fadeIn 1s ease-out;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    .hero p {
+      font-size: 1.5rem;
+    }
+    
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    
+    /* Grid Layouts */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-bottom: 4rem;
+    }
+    .dashboard {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin-bottom: 4rem;
+    }
+    
+    /* Cards & Boxes */
+    .feature-card, .generator-box, .chart-container, .stat-card, .about-section {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 2rem;
+      box-shadow: var(--neumorph);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 2px solid var(--accent);
+    }
+    .feature-card:hover,
+    .generator-box:hover,
+    .chart-container:hover,
+    .stat-card:hover,
+    .about-section:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 45px rgba(0,0,0,0.15);
+    }
+    .feature-card { text-align: center; }
+    .feature-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    /* Password Generator */
+    .password-display {
+      display: flex;
+      gap: 1rem;
+      background: rgba(255,107,107,0.1);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .password-display input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 1.2rem;
+      outline: none;
+      color: var(--text);
+    }
+    .copy-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--accent);
+      font-size: 1.5rem;
+    }
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .toggle-switch {
+      width: 60px;
+      height: 34px;
+      background: #ddd;
+      border-radius: 17px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      top: 4px;
+      left: 4px;
+      transition: transform 0.3s ease;
+    }
+    .toggle-switch.active {
+      background: var(--accent);
+    }
+    .toggle-switch.active::after {
+      transform: translateX(26px);
+    }
+    
+    /* Security Dashboard */
+    .chart-container, .stat-card {
+      padding: 1.5rem;
+    }
+    .progress-bar {
+      background: #eee;
+      border-radius: 12px;
+      overflow: hidden;
+      height: 12px;
+      margin-top: 0.5rem;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FF6B6B 0%, #FFD93D 50%, var(--accent) 100%);
+    }
+    
+    /* Future Plans Section */
+    .future-plans {
+      background: var(--accent);
+      color: #fff;
+      border-radius: 24px;
+      padding: 2rem;
+      text-align: center;
+      margin-bottom: 4rem;
+      animation: slideIn 1s ease-out;
+    }
+    .future-plans h2 { margin-top: 0; }
+    
+    /* About Section */
+    .about-section header h1 {
+      margin-top: 0;
+      color: var(--accent);
+    }
+    .section-block {
+      margin-bottom: 2rem;
+    }
+    .section-block h2 {
+      margin-bottom: 1rem;
+      border-bottom: 2px solid var(--gradient-1);
+      display: inline-block;
+      padding-bottom: 0.3rem;
+      color: var(--accent);
+    }
+    .section-block ul, .section-block ol { padding-left: 1.5rem; }
+    .section-block table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    .section-block table, .section-block th, .section-block td {
+      border: 1px solid #ccc;
+    }
+    .section-block th, .section-block td {
+      padding: 0.5rem;
+      text-align: left;
+    }
+    .testimonials blockquote {
+      border-left: 4px solid var(--gradient-1);
+      padding-left: 1rem;
+      font-style: italic;
+      margin: 1rem 0;
+    }
+    .live-test input[type="password"] {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+    }
+    
+    /* Floating Action Button */
+    .fab {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--gradient-1);
+      color: var(--card-bg);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease;
+    }
+    .fab:hover {
+      transform: scale(1.1);
+    }
+    
+    /* Keyframe Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-50px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    /* Responsive Media Queries */
+    @media (max-width: 768px) {
+      .hero { padding: 6rem 1rem; }
+      .navbar { flex-direction: column; gap: 0.5rem; }
+      .nav-links { flex-wrap: wrap; justify-content: center; }
+    }
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 2.5rem; }
+      .hero p { font-size: 1.2rem; }
+      .toggle-group { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar" role="navigation" aria-label="Main Navigation">
+    <h1 tabindex="0">SecurePass Ultra</h1>
+    <div class="nav-links">
+      <a href="#home" tabindex="0">Home</a>
+      <a href="#about" tabindex="0">About</a>
+    </div>
+    <div class="theme-switcher" role="button" aria-label="Toggle Theme" tabindex="0" onclick="toggleTheme()">🌓</div>
+  </nav>
+  
+  <!-- Main Content -->
+  <main class="container" id="home">
+    <!-- Hero Section -->
+    <section class="hero" aria-label="Hero Section">
+      <h1 tabindex="0">Your Digital Fortress</h1>
+      <p tabindex="0">Advanced Password Protection &amp; Management</p>
+    </section>
+    
+    <!-- Features Grid -->
+    <section class="features-grid" aria-label="Features">
+      <div class="feature-card hover-grow" tabindex="0">
+        <div class="feature-icon" aria-hidden="true">🛡️</div>
+        <h3 tabindex="0">Quantum Encryption</h3>
+        <p tabindex="0">AES-512 &amp; Quantum-resistant algorithms</p>
+      </div>
+      <!-- Additional feature cards can be added here -->
+    </section>
+    
+    <!-- Password Generator -->
+    <section class="generator-box" aria-labelledby="passwordGeneratorLabel">
+      <h2 id="passwordGeneratorLabel" tabindex="0">⚡ Smart Password Generator</h2>
+      <div class="password-display">
+        <input type="text" id="passwordField" readonly aria-label="Generated Password" />
+        <button class="copy-btn" onclick="copyPassword()" aria-label="Copy Password">
+          <span class="material-icons" aria-hidden="true">content_copy</span>
+        </button>
+      </div>
+      <div class="toggle-group">
+        <label for="toggleSymbols" tabindex="0">Include Symbols</label>
+        <div id="toggleSymbols" class="toggle-switch" role="switch" aria-checked="false" tabindex="0" onclick="toggleSetting(this)"></div>
+      </div>
+    </section>
+    
+    <!-- Security Dashboard -->
+    <section class="dashboard" aria-label="Security Dashboard">
+      <div class="chart-container" aria-label="Security Chart">
+        <canvas id="securityChart" role="img" aria-label="Radar Chart showing Password Security Metrics"></canvas>
+      </div>
+      <div class="security-stats">
+        <div class="stat-card" aria-label="Password Health">
+          <h4 tabindex="0">Password Health</h4>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 75%"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Future Plans Section -->
+    <section class="future-plans" aria-labelledby="futurePlansHeading">
+      <h2 id="futurePlansHeading" tabindex="0">Bhavishya Ki Yojana</h2>
+      <p tabindex="0">
+        Main aane wale samay mein bahut hi powerful suraksha tools aur ek anokhi website lekar aane wala hu. 
+        Yeh website aapko advanced digital security ke naye maapdand par le jayegi.
+      </p>
+      <p tabindex="0">
+        (I am planning to launch exceptionally powerful security tools and a unique website that sets new standards in digital security.)
+      </p>
+    </section>
+  </main>
+  
+  <!-- About Section -->
+  <section class="container" id="about" aria-labelledby="aboutHeading">
+    <div class="about-section">
+      <header>
+        <h1 id="aboutHeading" tabindex="0">About Meru Password Strength Checker</h1>
+        <p tabindex="0">
+          We are an innovative platform dedicated to taking internet security to the next level.
+          Our goal is to make digital security simple, effective, and accessible to everyone.
+        </p>
+      </header>
+      
+      <!-- Why Was This Tool Created -->
+      <div class="section-block">
+        <h2 tabindex="0">Why Was This Tool Created?</h2>
+        <p tabindex="0">
+          In today's world, cybercrimes are increasing rapidly, and weak passwords are one of the biggest vulnerabilities.
+          This tool helps you evaluate your password’s strength and improve it.
+        </p>
+      </div>
+      
+      <!-- How It Works -->
+      <div class="section-block">
+        <h2 tabindex="0">How It Works?</h2>
+        <ol>
+          <li tabindex="0">🔹 Enter your password in the input field.</li>
+          <li tabindex="0">🔹 Our system analyzes the strength of your password.</li>
+          <li tabindex="0">🔹 It estimates the time required to crack it.</li>
+          <li tabindex="0">🔹 If weak, it provides suggestions for a stronger password.</li>
+        </ol>
+      </div>
+      
+      <!-- Key Features -->
+      <div class="section-block">
+        <h2 tabindex="0">Key Features</h2>
+        <ul>
+          <li tabindex="0">✅ Analyzes password security (Weak, Medium, Strong)</li>
+          <li tabindex="0">✅ Estimates the time required to crack a password</li>
+          <li tabindex="0">✅ Provides strong password suggestions</li>
+          <li tabindex="0">✅ 100% client-side security – No data is stored</li>
+        </ul>
+      </div>
+      
+      <!-- Why Choose Us -->
+      <div class="section-block">
+        <h2 tabindex="0">Why Choose Us?</h2>
+        <ul>
+          <li tabindex="0">✔️ 100% Free &amp; Secure</li>
+          <li tabindex="0">✔️ No data is collected or stored</li>
+          <li tabindex="0">✔️ Instant password strength analysis</li>
+          <li tabindex="0">✔️ Strong password recommendations</li>
+          <li tabindex="0">✔️ No third-party API dependency</li>
+        </ul>
+      </div>
+      
+      <!-- Upcoming Features -->
+      <div class="section-block">
+        <h2 tabindex="0">Upcoming Features</h2>
+        <ul>
+          <li tabindex="0">🚀 Advanced AI-based password analysis</li>
+          <li tabindex="0">🔐 Two-factor authentication strength checker</li>
+          <li tabindex="0">📊 Password security report generation</li>
+          <li tabindex="0">🔑 Offline password manager integration</li>
+          <li tabindex="0">🌎 Multi-language support</li>
+        </ul>
+      </div>
+      
+      <!-- User Testimonials -->
+      <div class="section-block testimonials">
+        <h2 tabindex="0">What Users Say</h2>
+        <blockquote tabindex="0">
+          "This tool helped me create a much stronger password! Highly recommended." – Anonymous User
+        </blockquote>
+        <blockquote tabindex="0">
+          "A simple yet powerful password checker. Love the security features!" – Security Expert
+        </blockquote>
+      </div>
+      
+      <!-- Contact Us -->
+      <div class="section-block">
+        <h2 tabindex="0">Contact Us</h2>
+        <p tabindex="0">
+          Have questions or suggestions? Reach out to us at:
+        </p>
+        <p tabindex="0">Email: <a href="mailto:secure@meruchecker.com">secure@meruchecker.com</a></p>
+        <p tabindex="0">Twitter: <a href="https://twitter.com/MeruSecurity" target="_blank">@MeruSecurity</a></p>
+      </div>
+      
+      <!-- Our Mission & Values -->
+      <div class="section-block">
+        <h2 tabindex="0">Our Mission &amp; Values</h2>
+        <p tabindex="0">
+          We believe that <strong>password security</strong> is the foundation of digital safety.
+          Our mission is to empower users with tools that help them stay secure online, without compromising privacy.
+        </p>
+        <ul>
+          <li tabindex="0">🔒 Privacy First</li>
+          <li tabindex="0">🚀 Continuous Innovation</li>
+          <li tabindex="0">🛡️ User Safety &amp; Security</li>
+          <li tabindex="0">🌍 Accessibility for Everyone</li>
+        </ul>
+      </div>
+      
+      <!-- Technology Used -->
+      <div class="section-block">
+        <h2 tabindex="0">Technology Used</h2>
+        <ul>
+          <li tabindex="0">🖥️ Frontend: HTML, CSS, JavaScript</li>
+          <li tabindex="0">⚙️ Security Algorithms: Custom-built password strength checker</li>
+          <li tabindex="0">📡 Hosting: GitHub Pages / Replit / Render</li>
+        </ul>
+      </div>
+      
+      <!-- Security Tips -->
+      <div class="section-block">
+        <h2 tabindex="0">Security Tips</h2>
+        <ul>
+          <li tabindex="0">🔹 Use a mix of uppercase, lowercase, numbers, and symbols in your password.</li>
+          <li tabindex="0">🔹 Avoid using common passwords like "123456" or "password".</li>
+          <li tabindex="0">🔹 Never share your password with anyone.</li>
+          <li tabindex="0">🔹 Use two-factor authentication (2FA) wherever possible.</li>
+          <li tabindex="0">🔹 Update your passwords regularly.</li>
+        </ul>
+      </div>
+      
+      <!-- Password Myths & Facts -->
+      <div class="section-block">
+        <h2 tabindex="0">Password Myths &amp; Facts</h2>
+        <table>
+          <thead>
+            <tr>
+              <th tabindex="0">Myth</th>
+              <th tabindex="0">Fact</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td tabindex="0">Adding numbers like "123" makes a password strong.</td>
+              <td tabindex="0">No, predictable patterns make it weak.</td>
+            </tr>
+            <tr>
+              <td tabindex="0">Longer passwords are always better.</td>
+              <td tabindex="0">Yes, but only if they are random and complex.</td>
+            </tr>
+            <tr>
+              <td tabindex="0">Using special characters is enough for security.</td>
+              <td tabindex="0">Not really, you need a strong overall combination.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Real-World Hacking Cases -->
+      <div class="section-block">
+        <h2 tabindex="0">Real-World Hacking Cases</h2>
+        <ul>
+          <li tabindex="0">🔹 <strong>2012 - LinkedIn Breach:</strong> 167 million passwords were leaked.</li>
+          <li tabindex="0">🔹 <strong>2013 - Adobe Hack:</strong> 153 million user credentials were exposed.</li>
+          <li tabindex="0">🔹 <strong>2019 - Collection #1:</strong> 773 million email-password combinations were leaked online.</li>
+        </ul>
+        <p tabindex="0">Such cases prove why strong and unique passwords are necessary!</p>
+      </div>
+      
+      <!-- Dark Web & Passwords -->
+      <div class="section-block">
+        <h2 tabindex="0">How Hackers Sell Your Passwords on the Dark Web?</h2>
+        <p tabindex="0">
+          Once a password is leaked, hackers bundle millions of credentials and sell them on the dark web at very low prices.
+        </p>
+        <p tabindex="0"><strong>How to Protect Yourself?</strong></p>
+        <ul>
+          <li tabindex="0">🔹 Use different passwords for different accounts.</li>
+          <li tabindex="0">🔹 Enable Two-Factor Authentication (2FA).</li>
+          <li tabindex="0">🔹 Regularly check if your email or password has been leaked (use haveibeenpwned.com).</li>
+        </ul>
+      </div>
+      
+      <!-- Live Password Strength Tester -->
+      <div class="section-block live-test">
+        <h2 tabindex="0">Check Your Password Strength in Real Time</h2>
+        <p tabindex="0">Type your password below to check how secure it is.</p>
+        <input type="password" id="passwordInput" placeholder="Enter your password" oninput="checkStrength()" aria-label="Enter password to test strength" />
+        <p id="passwordStrength" tabindex="0"></p>
+      </div>
+      
+      <!-- Privacy & Data Protection -->
+      <div class="section-block">
+        <h2 tabindex="0">Privacy &amp; Data Protection</h2>
+        <p tabindex="0">
+          We respect your privacy! Our tool operates completely on your device and does not store any password or personal data on our servers.
+        </p>
+        <p tabindex="0">🔒 100% Client-Side Security.</p>
+      </div>
+      
+      <!-- FAQ Section -->
+      <div class="section-block">
+        <h2 tabindex="0">Frequently Asked Questions</h2>
+        <p tabindex="0"><strong>Q: Is this password checker safe to use?</strong></p>
+        <p tabindex="0">A: Yes! Your password never leaves your device.</p>
+        <p tabindex="0"><strong>Q: How is password strength calculated?</strong></p>
+        <p tabindex="0">A: We analyze factors like length, complexity, and predictability.</p>
+        <p tabindex="0"><strong>Q: Does this tool store my passwords?</strong></p>
+        <p tabindex="0">A: No, we do not collect or store any passwords.</p>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Floating Action Button -->
+  <div class="fab" role="button" aria-label="Scroll to top" tabindex="0" onclick="scrollToTop()">
+    <span class="material-icons" aria-hidden="true">arrow_upward</span>
+  </div>
+  
+  <!-- JavaScript -->
+  <script>
+    // Dynamic Theme Toggle
+    function toggleTheme() {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+    }
+    
+    // Password Generator (basic demo logic)
+    function generatePassword() {
+      const length = 16;
+      const charset = {
+        upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+        lower: 'abcdefghijklmnopqrstuvwxyz',
+        numbers: '0123456789',
+        symbols: '!@#$%^&*()_+~`|}{[]:;?><,./-='
+      };
+      let allChars = charset.upper + charset.lower + charset.numbers + charset.symbols;
+      let password = '';
+      for (let i = 0; i < length; i++) {
+        password += allChars.charAt(Math.floor(Math.random() * allChars.length));
+      }
+      document.getElementById('passwordField').value = password;
+    }
+    
+    // Copy Password to Clipboard
+    function copyPassword() {
+      const passwordField = document.getElementById('passwordField');
+      passwordField.select();
+      passwordField.setSelectionRange(0, 99999);
+      document.execCommand('copy');
+      alert('Password copied to clipboard!');
+    }
+    
+    // Toggle Settings (for demonstration)
+    function toggleSetting(elem) {
+      elem.classList.toggle('active');
+      // Update ARIA attribute for accessibility
+      let state = elem.getAttribute('aria-checked') === 'true' ? 'false' : 'true';
+      elem.setAttribute('aria-checked', state);
+    }
+    
+    // Smooth Scroll to Top
+    function scrollToTop() {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+    
+    // Initialize Chart
+    new Chart(document.getElementById('securityChart'), {
+      type: 'radar',
+      data: {
+        labels: ['Strength', 'Uniqueness', 'Complexity', 'Length', 'Security'],
+        datasets: [{
+          data: [85, 90, 75, 95, 80],
+          backgroundColor: 'rgba(255,107,107,0.2)',
+          borderColor: 'var(--gradient-1)'
+        }]
+      }
+    });
+    
+    // Live Password Strength Tester
+    function checkStrength() {
+      const password = document.getElementById("passwordInput").value;
+      const strengthText = document.getElementById("passwordStrength");
+      if (password.length < 6) {
+        strengthText.innerHTML = "Weak Password ❌";
+        strengthText.style.color = "red";
+      } else if (password.length < 12) {
+        strengthText.innerHTML = "Moderate Password ⚠️";
+        strengthText.style.color = "orange";
+      } else {
+        strengthText.innerHTML = "Strong Password ✅";
+        strengthText.style.color = "green";
+      }
+    }
+    
+    // Initialization on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      if(localStorage.getItem('theme') === 'dark') toggleTheme();
+      generatePassword();
+    });
+  </script>
+</body>
+</html>

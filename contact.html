@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us - SecurePass</title>
+  <meta name="description" content="Contact SecurePass for any queries or support.">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* Global Styles */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fad0c4);
+      color: #333;
+      min-height: 100vh;
+    }
+    a { text-decoration: none; }
+    
+    /* Navigation Bar */
+    nav {
+      background-color: #ff6f61;
+      padding: 10px 0;
+    }
+    .nav-menu {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      margin: 0;
+    }
+    .nav-menu li { margin: 0 15px; }
+    .nav-menu li a {
+      color: #fff;
+      font-weight: bold;
+      transition: color 0.3s ease;
+    }
+    .nav-menu li a:hover { color: #000; }
+    
+    /* Header Styling */
+    header {
+      text-align: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #ff6f61, #ff8a65);
+      color: #fff;
+    }
+    header h1 { margin: 0; font-size: 2.5em; }
+    
+    /* Contact Section Styling */
+    .contact {
+      padding: 40px 20px;
+      max-width: 700px;
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .contact h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #ff6f61;
+    }
+    .contact-info {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .contact-info p {
+      margin: 5px 0;
+      font-size: 1.1em;
+    }
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 10px;
+    }
+    .social-links a {
+      font-size: 28px;
+      color: #ff6f61;
+      transition: transform 0.3s ease, color 0.3s ease;
+    }
+    .social-links a:hover {
+      color: #ff8a65;
+      transform: scale(1.2);
+    }
+    .contact form {
+      text-align: left;
+    }
+    .contact label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+      color: #555;
+    }
+    .contact input, .contact textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ff6f61;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .contact input:focus, .contact textarea:focus {
+      border-color: #ff8a65;
+      box-shadow: 0 0 8px rgba(255, 138, 101, 0.5);
+      outline: none;
+    }
+    .contact button {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      font-size: 18px;
+      background-color: #ff6f61;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .contact button:hover { background-color: #ff8a65; }
+    
+    /* Google Map Styling */
+    .map-container {
+      margin: 30px auto;
+      max-width: 700px;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .map-container iframe {
+      width: 100%;
+      height: 300px;
+      border: 0;
+    }
+    
+    /* Live Chat Button */
+    .live-chat {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #ff6f61;
+      color: #fff;
+      border: none;
+      padding: 15px 20px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 16px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      z-index: 1000;
+    }
+    .live-chat:hover {
+      background-color: #ff8a65;
+      transform: translateY(-5px);
+    }
+    
+    /* Footer Styling */
+    footer {
+      background-color: #ff6f61;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation & Header -->
+  <header>
+    <nav>
+      <ul class="nav-menu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <h1>Contact Us</h1>
+  </header>
+  
+  <!-- Contact Section -->
+  <section class="contact">
+    <h2>Get in Touch</h2>
+    
+    <!-- Contact Information -->
+    <div class="contact-info">
+      <p><strong>Email:</strong> <a href="mailto:info@securepass.com">info@securepass.com</a></p>
+      <p><strong>Instagram:</strong> <a href="https://instagram.com/securepass" target="_blank">@securepass</a></p>
+      <p><strong>Facebook:</strong> <a href="https://facebook.com/securepass" target="_blank">SecurePass</a></p>
+      <p><strong>YouTube:</strong> <a href="https://youtube.com/securepass" target="_blank">SecurePass Channel</a></p>
+      <p><strong>Twitter:</strong> <a href="https://twitter.com/securepass" target="_blank">@securepass</a></p>
+      
+      <!-- Animated Social Media Icons -->
+      <div class="social-links">
+        <a href="mailto:info@securepass.com" aria-label="Email">✉️</a>
+        <a href="https://instagram.com/securepass" target="_blank" aria-label="Instagram">📸</a>
+        <a href="https://facebook.com/securepass" target="_blank" aria-label="Facebook">📘</a>
+        <a href="https://youtube.com/securepass" target="_blank" aria-label="YouTube">▶️</a>
+        <a href="https://twitter.com/securepass" target="_blank" aria-label="Twitter">🐦</a>
+      </div>
+    </div>
+    
+    <!-- Contact Form -->
+    <form>
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" placeholder="Your Name" required>
+      
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" placeholder="Your Email" required>
+      
+      <label for="message">Message:</label>
+      <textarea id="message" name="message" rows="4" placeholder="Your Message" required></textarea>
+      
+      <button type="submit">Send Message</button>
+    </form>
+  </section>
+  
+  <!-- Google Map Integration -->
+  <div class="map-container">
+    <iframe 
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.086058354545!2d144.96305831531546!3d-37.81410797975154!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad65d43d31f9a55%3A0x5045675218ce7e33!2sMelbourne%20CBD%2C%20Melbourne%20VIC%2C%20Australia!5e0!3m2!1sen!2sin!4v1616698412574!5m2!1sen!2sin" 
+      allowfullscreen="" loading="Gujarat"></iframe>
+  </div>
+  
+  <!-- Live Chat Button -->
+  <button class="live-chat" onclick="alert('Live Chat feature coming soon!')">Live Chat</button>
+  
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 SecurePass. All rights reserved.</p>
+  </footer>
+</body>
+</html>

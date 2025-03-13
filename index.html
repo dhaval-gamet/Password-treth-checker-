@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔐 SecurePass - पासवर्ड मैनेजर</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- बैकग्राउंड वीडियो (Parallax Effect के साथ) -->
+  <div class="video-container">
+    <video autoplay muted loop id="bg-video">
+      <source src="your-video.mp4" type="video/mp4">
+      आपका ब्राउज़र वीडियो सपोर्ट नहीं करता।
+    </video>
+    <div class="video-overlay"></div>
+  </div>
+
+  <!-- फ्लोटिंग बैकग्राउंड बबल्स -->
+  <div class="bubbles">
+    <span>😀</span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <!-- मुख्य कंटेनर -->
+  <div class="container">
+    <h2>🔐 SecurePass</h2>
+    <h3>Password trength Cheker</h3>
+    <p><strong>AI advice:</strong> <span id="ai-advice"></span></p>
+    <p id="strengthScore">📊 0/10</p>
+    <input type="password" id="password" placeholder="Enter your Password" oninput="checkStrength()">
+    <div id="strength-bar" class="strength-indicator"></div>
+    <p id="result"></p>
+    <button onclick="suggestStrongPassword()">Suggest a strong password</button>
+    <p><strong>👉 Suggest:</strong> <span id="suggested-password"></span></p>
+     <div class="content">
+   <p class="preview">
+     हमारा पासवर्ड सिक्योरिटी सिस्टम आपके द्वारा दिए गए पासवर्ड.....
+   </p>
+   <a href="Suggest Password.html" class="read-more">Read more...</a>
+ </div>
+    <button onclick="Chatbot()">🧠 Chat With AI</button>
+    <div class="content">
+  <p class="preview">
+    Our chatbot is designed to provide expert guidance on password....
+  </p>
+  <a href="GPT.html" class="read-more">Read more...</a>
+</div>
+    <button onclick="checkBreach()">Check Password Breach</button>
+    <p id="breach-result"></p>
+    <div class="content">
+  <p class="preview">
+    We are developing a Password Strength & Security Checker System....
+  </p>
+  <a href="Password breach.html" class="read-more">Read more...</a>
+</div>
+    <button onclick="openMyPage()">Secure Password Manager</button>
+<div class="content">
+  <p class="preview">
+    We are developing a secure local password manager that stores.....
+  </p>
+  <a href="Password.html" class="read-more">Read more...</a>
+</div>
+    <hr>
+    <button onclick="fishing()">Fishing Cheker 
+      
+    </button>
+    <hr>
+
+    <button onclick="toggleDarkMode()">🌙 Dark mode</button>
+  </div>
+
+  <!-- अपना JavaScript यहाँ लोड करें -->
+  <script src="main.js"></script>
+</body>
+</html>

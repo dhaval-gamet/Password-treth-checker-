@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecurePass - Password Manager</title>
+  <meta name="description" content="SecurePass - Best Password Strength Checker and Manager">
+  <meta name="keywords" content="Password, Security, Manager, Strength Checker, SecurePass">
+  <meta property="og:title" content="SecurePass - Password Manager">
+  <meta property="og:description" content="Best Password Strength Checker and Manager">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* Global Styles */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+      color: #333;
+      background-color: #fff;
+      position: relative;
+      min-height: 100vh;
+    }
+    a {
+      text-decoration: none;
+    }
+    
+    /* Loader Animation */
+    #loader {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 9999;
+      background: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .spinner {
+      border: 8px solid #f3f3f3;
+      border-top: 8px solid #2FD536;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Sticky Navigation Bar */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background-color: #2FD536;
+    }
+    .nav-menu {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      margin: 0;
+      padding: 10px 0;
+    }
+    .nav-menu li {
+      margin: 0 15px;
+    }
+    .nav-menu li a {
+      color: #fff;
+      font-weight: bold;
+      transition: color 0.3s ease;
+    }
+    .nav-menu li a:hover {
+      color: #000;
+    }
+    
+    /* Header Styling */
+    header {
+      text-align: center;
+      padding: 20px;
+      background-color: #2FD536;
+      color: #fff;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.5em;
+    }
+    header h3 {
+      margin: 5px 0 0;
+      font-family: serif;
+      font-size: 1.2em;
+    }
+    
+    /* Bubbles Background */
+    .bubbles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      overflow: hidden;
+      z-index: -1;
+    }
+    .bubbles span {
+      position: absolute;
+      bottom: -100px;
+      width: 20px;
+      height: 20px;
+      background: #00AAFF;
+      border-radius: 50%;
+      opacity: 0.5;
+      animation: bubbleAnimation linear infinite;
+    }
+    .bubbles span:nth-child(1) { left: 10%; animation-duration: 8s; animation-delay: 0s; }
+    .bubbles span:nth-child(2) { left: 20%; animation-duration: 10s; animation-delay: 2s; width: 30px; height: 30px; }
+    .bubbles span:nth-child(3) { left: 35%; animation-duration: 12s; animation-delay: 4s; width: 25px; height: 25px; }
+    .bubbles span:nth-child(4) { left: 50%; animation-duration: 9s; animation-delay: 1s; width: 40px; height: 40px; }
+    .bubbles span:nth-child(5) { left: 65%; animation-duration: 7s; animation-delay: 3s; width: 20px; height: 20px; }
+    .bubbles span:nth-child(6) { left: 80%; animation-duration: 11s; animation-delay: 2s; width: 35px; height: 35px; }
+    .bubbles span:nth-child(7) { left: 90%; animation-duration: 13s; animation-delay: 5s; width: 45px; height: 45px; }
+    .bubbles span:nth-child(8) { left: 75%; animation-duration: 8s; animation-delay: 5s; width: 25px; height: 25px; }
+    .bubbles span:nth-child(9) { left: 90%; animation-duration: 13s; animation-delay: 0s; width: 45px; height: 45px; }
+    .bubbles span:nth-child(10) { left: 0%; animation-duration: 9s; animation-delay: 0s; width: 45px; height: 45px; }
+    @keyframes bubbleAnimation {
+      0% { transform: translateY(0); opacity: 0.5; }
+      50% { opacity: 1; }
+      100% { transform: translateY(-100vh); opacity: 0; }
+    }
+    
+    /* Main Content Styling */
+    main {
+      padding: 20px;
+      margin-top: 20px;
+    }
+    .content {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .action-button {
+      display: inline-block;
+      padding: 10px 20px;
+      margin: 20px auto;
+      font-size: 20px;
+      background-color: #8200B0;
+      border: none;
+      border-radius: 25px;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+    .action-button:hover {
+      background-color: #6A0090;
+      transform: scale(1.05);
+    }
+    
+    /* Password Tips Section */
+    .password-tips {
+      padding: 40px 20px;
+      text-align: center;
+      background-color: #F5F5F5;
+    }
+    .password-tips h2 {
+      margin-bottom: 30px;
+      color: #333;
+    }
+    .tip-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 0 20px;
+    }
+    .tip-card {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+    .tip-card:hover {
+      transform: translateY(-5px);
+    }
+    .tip-icon {
+      font-size: 40px;
+      color: #8200B0;
+      margin-bottom: 10px;
+    }
+    .tip-text {
+      font-size: 16px;
+      color: #333;
+    }
+    
+    /* Testimonials Section */
+    .testimonials {
+      padding: 40px 20px;
+      background-color: #eef;
+      text-align: center;
+    }
+    .testimonials h2 {
+      margin-bottom: 30px;
+      color: #333;
+    }
+    .testimonial-slider {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 20px;
+      padding: 20px;
+    }
+    .testimonial {
+      flex: 0 0 300px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      scroll-snap-align: start;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .testimonial h4 {
+      margin-top: 15px;
+      color: #555;
+    }
+    
+    /* FAQ Section */
+    .faq {
+      padding: 40px 20px;
+      background-color: #fafafa;
+    }
+    .faq h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+    .faq-item {
+      margin-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+    }
+    .faq-item h3 {
+      cursor: pointer;
+      margin: 0;
+      font-size: 18px;
+      color: #8200B0;
+      transition: color 0.3s ease;
+    }
+    .faq-item h3:hover {
+      color: #6A0090;
+    }
+    .faq-item p {
+      display: none;
+      margin: 5px 0 0;
+      font-size: 16px;
+      color: #555;
+    }
+    
+    /* Contact Us Section */
+    .contact {
+      padding: 40px 20px;
+      background-color: #F0F0F0;
+      text-align: center;
+    }
+    .contact h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .contact form {
+      max-width: 500px;
+      margin: 0 auto;
+      text-align: left;
+    }
+    .contact label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+    .contact input, .contact textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 15px;
+    }
+    .contact button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #2FD536;
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .contact button:hover {
+      background-color: #27a82b;
+    }
+    
+    /* Subscription Section */
+    .subscribe {
+      padding: 40px 20px;
+      background-color: #fff;
+      text-align: center;
+    }
+    .subscribe h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .subscribe form {
+      max-width: 400px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .subscribe input[type="email"] {
+      width: 80%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-right: 5px;
+    }
+    .subscribe button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #8200B0;
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .subscribe button:hover {
+      background-color: #6A0090;
+    }
+    
+    /* Footer / Social Media */
+    footer {
+      background-color: #2FD536;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+    }
+    footer .social-media a {
+      margin: 0 10px;
+      color: #fff;
+      font-size: 24px;
+      transition: color 0.3s ease;
+    }
+    footer .social-media a:hover {
+      color: #000;
+    }
+    
+    /* Back to Top Button */
+    #backToTop {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #8200B0;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      transition: background-color 0.3s ease;
+      z-index: 100;
+    }
+    #backToTop:hover {
+      background-color: #6A0090;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 600px) {
+      .action-button {
+        width: 80%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="spinner"></div>
+  </div>
+  
+  <!-- Bubbles Background -->
+  <div class="bubbles">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+  
+  <!-- Navigation & Header -->
+  <header role="banner">
+    <nav role="navigation">
+      <ul class="nav-menu">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#strength">Password Strength</a></li>
+        <!-- Recommended alternative -->
+<li>
+  <a href="#about" onclick="about()">About</a>
+</li>
+<li>
+  <a href="#privacy" onclick="privacy()">
+Privacy policy  
+  </a>
+</li>
+        <li><a href="#contact" onclick="contact()">Contact</a></li>
+      </ul>
+    </nav>
+    <h1>🔐 SecurePass - Password Manager</h1>
+    <h3>👌 Best Password Strength Checker Website</h3>
+  </header>
+  
+  <!-- Main Content -->
+  <main role="main" id="home">
+    <!-- Welcome Section -->
+    <section class="content">
+      <h2>Welcome to My Home Page</h2>
+      <p>🔐 SecurePass - Your Personal Password Manager</p>
+      <button class="action-button" onclick="openIndex()">Get Started</button>
+    </section>
+    
+    <!-- Inspirational Message -->
+    <section class="content">
+      <h4>"Only a strong password can protect your digital world!"</h4>
+      <strong>👌 Best Tips for a Strong Password 👌</strong>
+    </section>
+    
+    <!-- Password Tips Section -->
+    <section class="password-tips" id="strength">
+      <h2>Password Security Tips</h2>
+      <div class="tip-container">
+        <div class="tip-card">
+          <div class="tip-icon">🔒</div>
+          <div class="tip-text">Use a mix of letters, numbers, and symbols.</div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">🔑</div>
+          <div class="tip-text">Avoid using easily guessable information.</div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">🛡️</div>
+          <div class="tip-text">Use a unique password for each account.</div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">💡</div>
+          <div class="tip-text">Update your passwords regularly.</div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">🔐</div>
+          <div class="tip-text">Use a passphrase with random words for extra security.</div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">📱</div>
+          <div class="tip-text">Enable two-factor authentication whenever possible.</div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+      <h2>What Our Users Say</h2>
+      <div class="testimonial-slider">
+        <div class="testimonial">
+          <p>"This website saved my online accounts! Highly recommend."</p>
+          <h4>- User A</h4>
+        </div>
+        <div class="testimonial">
+          <p>"A must-have tool for every internet user."</p>
+          <h4>- User B</h4>
+        </div>
+        <div class="testimonial">
+          <p>"SecurePass made managing passwords effortless and secure."</p>
+          <h4>- User C</h4>
+        </div>
+      </div>
+    </section>
+    
+    <!-- FAQ Section -->
+    <section class="faq">
+      <h2>Frequently Asked Questions</h2>
+      <div class="faq-item">
+        <h3 onclick="toggleFAQ(this)">Q1: How do I create a strong password?</h3>
+        <p>A strong password should include a mix of letters, numbers, and special characters.</p>
+      </div>
+      <div class="faq-item">
+        <h3 onclick="toggleFAQ(this)">Q2: How often should I update my password?</h3>
+        <p>It's recommended to update your passwords every 3-6 months.</p>
+      </div>
+      <div class="faq-item">
+        <h3 onclick="toggleFAQ(this)">Q3: What is two-factor authentication?</h3>
+        <p>Two-factor authentication adds an extra layer of security by requiring an additional verification step.</p>
+      </div>
+    </section>
+    
+    <!-- Contact Us Section -->
+    <section class="contact" id="contact">
+      <h2>Contact Us</h2>
+      <form>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" placeholder="Your Name" required>
+        
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" placeholder="Your Email" required>
+        
+        <label for="message">Message:</label>
+        <textarea id="message" name="message" rows="4" placeholder="Your Message" required></textarea>
+        
+        <button type="submit">Send Message</button>
+      </form>
+    </section>
+    
+    <!-- Subscription Section -->
+    <section class="subscribe">
+      <h2>Subscribe to Our Newsletter</h2>
+      <form>
+        <input type="email" placeholder="Enter your email" required>
+        <button type="submit">Subscribe</button>
+      </form>
+    </section>
+  </main>
+  
+  <!-- Back to Top Button -->
+  <button id="backToTop" onclick="scrollToTop()">↑</button>
+  
+  <!-- Footer / Social Media -->
+  <footer role="contentinfo">
+    <div class="social-media">
+      <a href="https://facebook.com" target="_blank" aria-label="Facebook">Facebook</a>
+      <a href="https://twitter.com" target="_blank" aria-label="Twitter">Twitter</a>
+      <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn">LinkedIn</a>
+    </div>
+    <p>&copy; 2025 SecurePass. All rights reserved.</p>
+  </footer>
+  
+  <script>
+    // Hide loader when page loads
+    window.addEventListener("load", function() {
+      document.getElementById("loader").style.display = "none";
+    });
+    
+    // Function to open index.html in a new tab
+    function openIndex() {
+      window.open("index.html", "_blank");
+    }
+    
+    // FAQ toggle function
+    function toggleFAQ(element) {
+      var faqContent = element.nextElementSibling;
+      faqContent.style.display = faqContent.style.display === "block" ? "none" : "block";
+    }
+    
+    // Back to Top button functionality
+    window.onscroll = function() {scrollFunction();};
+    function scrollFunction() {
+      var backToTop = document.getElementById("backToTop");
+      if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+        backToTop.style.display = "block";
+      } else {
+        backToTop.style.display = "none";
+      }
+    }
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+      function about() {
+    window.open("about.html", "_blank");
+  }
+    function contact() {
+    window.open("contact.html","_blank");
+    }
+    function privacy() {
+      window.open("privacy policy.html","_blank");
+    }
+  </script>
+</body>
+</html>

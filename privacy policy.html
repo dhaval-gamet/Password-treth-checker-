@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Secure & Professional</title>
+    <style>
+        :root {
+            --bg-color: #f4f4f4;
+            --text-color: #333;
+            --box-bg: white;
+            --box-shadow: rgba(0, 0, 0, 0.1);
+            --primary-color: #007bff;
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1e1e1e;
+                --text-color: #f4f4f4;
+                --box-bg: #2a2a2a;
+                --box-shadow: rgba(255, 255, 255, 0.1);
+            }
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: var(--box-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px var(--box-shadow);
+        }
+
+        h1 {
+            font-size: 28px;
+            color: var(--primary-color);
+        }
+
+        .section {
+            text-align: left;
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            box-shadow: 0px 2px 5px var(--box-shadow);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            background: rgba(0, 0, 255, 0.1);
+        }
+
+        .content {
+            display: none;
+            padding: 10px 0;
+            font-size: 14px;
+        }
+
+        .icon {
+            float: right;
+            font-size: 18px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .contact-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 30px;
+            font-size: 16px;
+            box-shadow: 0px 4px 8px var(--box-shadow);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🔒 Privacy Policy</h1>
+        <p><strong>Last Updated:</strong> [dhavalgameti855@gmail.com]</p>
+
+        <div class="section" onclick="toggleContent(this)">
+            <h2>🔹 1. Introduction <span class="icon">🔽</span></h2>
+            <div class="content">
+                <p>Welcome to our Password Strength Checker. Your privacy is our top priority.</p>
+            </div>
+        </div>
+
+        <div class="section" onclick="toggleContent(this)">
+            <h2>🔹 2. Data Collection & Security <span class="icon">🔽</span></h2>
+            <div class="content">
+                <ul>
+                    <li><strong>🔐 SSL Secured:</strong> Our website is encrypted with HTTPS.</li>
+                    <li><strong>🔑 No Password Storage:</strong> Passwords are checked locally in your browser.</li>
+                    <li><strong>🛡 No Tracking:</strong> We do not track, log, or store any user data.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section" onclick="toggleContent(this)">
+            <h2>🔹 3. Third-Party Services & Ads <span class="icon">🔽</span></h2>
+            <div class="content">
+                <p>We may display ads, but they do not track or collect your personal data.</p>
+            </div>
+        </div>
+
+        <div class="section" onclick="toggleContent(this)">
+            <h2>🔹 4. Cookies & GDPR Compliance <span class="icon">🔽</span></h2>
+            <div class="content">
+                <p><strong>✅ GDPR & CCPA Compliant:</strong> We respect user privacy.</p>
+                <p><strong>⚠ No Cookies:</strong> Our website does not store cookies.</p>
+            </div>
+        </div>
+
+        <div class="section" onclick="toggleContent(this)">
+            <h2>🔹 5. Contact Us <span class="icon">🔽</span></h2>
+            <div class="content">
+                <p>If you have any privacy concerns, contact us at:</p>
+                <p><strong>📧 Email:</strong> [dhavalgameti855@gmail.com]</p>
+            </div>
+        </div>
+
+        <p class="footer">© 2025 Your Website | All Rights Reserved.</p>
+    </div>
+
+    <button class="contact-btn" onclick="window.location.href='mailto:[Your Email Address]'">📧 Contact Us</button>
+
+    <script>
+        function toggleContent(element) {
+            var content = element.querySelector(".content");
+            var allContents = document.querySelectorAll(".content");
+            
+            allContents.forEach(function(item) {
+                if (item !== content) {
+                    item.style.display = "none";
+                }
+            });
+
+            content.style.display = (content.style.display === "block") ? "none" : "block";
+        }
+    </script>
+
+</body>
+</html>

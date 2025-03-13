@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <title>Advanced Password Manager - Stylish UI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* CSS Custom Properties for Theming */
+    :root {
+      --bg-color: #f5f5f5;
+      --text-color: #333;
+      --primary-color: #5563DE;
+      --secondary-color: #4349b5;
+      --accent-color: #ff4081;
+      --card-bg: rgba(255, 255, 255, 0.1);
+      --card-border: rgba(255, 255, 255, 0.2);
+      --transition-speed: 0.3s;
+    }
+    .dark-mode {
+      --bg-color: #121212;
+      --text-color: #e0e0e0;
+      --card-bg: rgba(0, 0, 0, 0.3);
+      --card-border: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Base Reset & Typography */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      overflow-x: hidden;
+      font-family: 'Montserrat', sans-serif;
+      cursor: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTggMEMzLjU4NjQ0IDAgMCAzLjU4NjQ0IDAgOCAwIDEyLjQxMzUgMy41ODY0NCAxNiA4IDE2QzEyLjQxMzUgMTYgOCAxMi40MTM1IDggOEM4IDMuNTg2NDQgMTIuNDEzNSAweiIgZmlsbD0iI0ZGRiIvPgo8L3N2Zz4=') 8 8, auto;
+    }
+    body {
+      position: relative;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      animation: gradientAnimation 15s ease infinite;
+      color: var(--text-color);
+      transition: background var(--transition-speed) ease, color var(--transition-speed) ease;
+    }
+    @keyframes gradientAnimation {
+      0% { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); }
+      50% { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); }
+      100% { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); }
+    }
+
+    /* Parallax Video Background with Overlay */
+    #video-background {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: -3;
+      transform: translateZ(0) scale(1.1);
+    }
+    .video-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: -2;
+    }
+
+    /* Container Styling with Backdrop Blur & 3D Effect */
+    .container {
+      max-width: 1200px;
+      margin: 60px auto;
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 12px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      transform: perspective(1000px) translateZ(0);
+      transition: transform 0.5s ease;
+    }
+    .container:hover {
+      transform: perspective(1000px) translateZ(10px);
+    }
+    h2, h3 {
+      margin-bottom: 15px;
+      text-align: center;
+      color: #fff;
+      opacity: 0;
+      animation: fadeIn 1s forwards;
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    /* Form Elements with Clip-Path for Unique Shape */
+    input[type="text"],
+    input[type="password"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 10px 15px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 6px;
+      font-size: 1em;
+      outline: none;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      transition: background var(--transition-speed) ease;
+      clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
+    }
+    input::placeholder, textarea::placeholder { color: #ddd; }
+
+    /* Flex Layout */
+    .flex {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      align-items: center;
+    }
+    .flex > * { flex: 1; min-width: 150px; }
+
+    /* Buttons with Ripple, 3D Hover & Animated Border */
+    button {
+      position: relative;
+      overflow: hidden;
+      background: var(--primary-color);
+      border: 2px solid var(--primary-color);
+      color: #fff;
+      padding: 12px 20px;
+      margin-top: 10px;
+      border-radius: 6px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color var(--transition-speed) ease;
+    }
+    button:hover { transform: translateY(-3px) scale(1.02); border-color: var(--accent-color); }
+    button:active { transform: translateY(0); }
+    /* Ripple Effect */
+    button .ripple {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      animation: rippleAnimation 600ms linear;
+      background-color: rgba(255, 255, 255, 0.7);
+    }
+    @keyframes rippleAnimation {
+      to { transform: scale(4); opacity: 0; }
+    }
+
+    /* Activity Log Panel */
+    .activity-log {
+      max-height: 200px;
+      overflow-y: auto;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 0.9em;
+      margin-top: 15px;
+      color: #fff;
+    }
+
+    /* Features Section with 3D Card Effects & Hover Transitions */
+    .features-container {
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      text-align: center;
+      position: relative;
+      color: #fff;
+      perspective: 1000px;
+    }
+    .feature-card:hover {
+      transform: translateY(-5px) rotateX(5deg);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    }
+    .feature-card .feature-icon {
+      font-size: 40px;
+      margin-bottom: 15px;
+    }
+    .feature-card h4 { font-size: 1.2em; margin-bottom: 10px; }
+    .feature-card p { font-size: 0.95em; line-height: 1.5; }
+    .tooltip {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary-color);
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 0.85em;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      white-space: nowrap;
+    }
+    .feature-card:hover .tooltip { opacity: 1; }
+    .feature-search {
+      margin-bottom: 20px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 6px;
+      font-size: 1em;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+    }
+
+    /* Custom SVG Icon Animation (Optional) */
+    .svg-icon {
+      width: 40px;
+      height: 40px;
+      stroke: var(--accent-color);
+      stroke-dasharray: 150;
+      stroke-dashoffset: 150;
+      animation: svgStroke 2s forwards;
+    }
+    @keyframes svgStroke {
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* Dark/Light Mode Toggle Button */
+    .mode-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--primary-color);
+      border: none;
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 1000;
+      transition: background var(--transition-speed) ease;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 600px) {
+      .flex { flex-direction: column; }
+      .feature-card { padding: 15px; }
+      .feature-card h4 { font-size: 1.1em; }
+      .feature-card p { font-size: 0.9em; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Parallax Video Background -->
+  <video id="video-background" autoplay muted loop>
+    <source src="https://www.w3schools.com/howto/rain.mp4" type="video/mp4">
+    आपका ब्राउज़र वीडियो सपोर्ट नहीं करता।
+  </video>
+  <div class="video-overlay"></div>
+  
+  <!-- Dark/Light Mode Toggle -->
+  <button class="mode-toggle" id="modeToggle" aria-label="Toggle Dark/Light Mode">Light Mode</button>
+  
+  <!-- Main Container -->
+  <div class="container" id="passwordManagerContainer">
+    <h2>Advanced Password Manager</h2>
+    <!-- Basic Features Section -->
+    <div class="section" id="basicSection">
+      <h3>Basic Features</h3>
+      <div class="flex">
+        <button id="generateBtn">Generate Password</button>
+        <input type="text" id="generatedPassword" placeholder="Generated Password" readonly>
+      </div>
+      <div class="flex">
+        <input type="text" id="website" placeholder="Website" aria-label="Website">
+        <input type="text" id="username" placeholder="Username" aria-label="Username">
+      </div>
+      <div class="flex">
+        <input type="password" id="password" placeholder="Password" aria-label="Password">
+        <span id="passwordStrength">Strength: -</span>
+      </div>
+      <button id="storeBtn">Store Password</button>
+      <div class="flex">
+        <button id="exportBtn">Export Passwords (Backup)</button>
+        <button id="importBtn">Import Passwords</button>
+      </div>
+      <textarea id="importExportArea" rows="4" placeholder="Paste JSON here for import/export" aria-label="Import/Export Area"></textarea>
+      <h4>Password History</h4>
+      <div id="historyPanel" class="activity-log"></div>
+    </div>
+    
+    <!-- Advanced Features Section -->
+    <div class="section" id="advancedSection">
+      <h3>Advanced Features</h3>
+      <div class="flex">
+        <button id="enable2FABtn">Enable 2FA (Simulated TOTP)</button>
+        <button id="simulateMFA">Simulate MFA (Additional Factor)</button>
+      </div>
+      <button id="auditBtn">Audit Passwords</button>
+      <button id="emergencyAccessBtn">Emergency Access (Simulated)</button>
+      <div class="flex">
+        <textarea id="secureNote" rows="3" placeholder="Write a secure note" aria-label="Secure Note"></textarea>
+        <select id="noteCategory" aria-label="Note Category">
+          <option value="personal">Personal</option>
+          <option value="work">Work</option>
+          <option value="others">Others</option>
+        </select>
+      </div>
+      <button id="saveNoteBtn">Save Secure Note</button>
+      <div class="flex">
+        <button id="shareBtn">Share Password Securely (Simulated)</button>
+        <button id="simulateBiometricBtn">Biometric Auth (Simulated)</button>
+      </div>
+      <button id="phishingCheckBtn">Phishing Protection Check (Simulated)</button>
+      <div class="flex">
+        <button id="syncBtn">Sync Data (Simulated)</button>
+        <button id="backupBtn">Backup Data (Simulated)</button>
+        <button id="restoreBtn">Restore Data (Simulated)</button>
+      </div>
+      <button id="aiSuggestBtn">AI Password Suggestion</button>
+    </div>
+    
+    <!-- Activity Log Section -->
+    <div class="section">
+      <h3>User Activity Log</h3>
+      <div id="activityLog" class="activity-log"></div>
+    </div>
+  </div>
+  
+  <!-- Features Section -->
+  <div class="features-container">
+    <h2>Key Features</h2>
+    <input type="text" id="featureSearch" class="feature-search" placeholder="Search features..." aria-label="Search Features">
+    <div class="features-grid" id="featuresGrid">
+      <!-- Feature cards will be loaded dynamically -->
+    </div>
+  </div>
+  
+  <!-- Language Toggle Section (Simulated) -->
+  <div class="container" id="languageContainer">
+    <h2>Language Preference</h2>
+    <button id="toggleLanguage">Switch to English</button>
+  </div>
+  
+  <!-- JavaScript -->
+  <script>
+    /*******************************
+     * Utility Functions & Helpers
+     *******************************/
+    const showNotification = (message, isError = false) => {
+      const notificationArea = document.createElement("div");
+      notificationArea.className = "notification" + (isError ? " error" : "");
+      notificationArea.textContent = message;
+      document.body.prepend(notificationArea);
+      setTimeout(() => notificationArea.remove(), 4000);
+      logActivity("Notification: " + message);
+    };
+
+    const logActivity = (activity) => {
+      const logPanel = document.getElementById("activityLog");
+      const timeStamp = new Date().toLocaleTimeString();
+      const logEntry = document.createElement("div");
+      logEntry.textContent = `[${timeStamp}] ${activity}`;
+      logPanel.appendChild(logEntry);
+      console.log(`[${timeStamp}] ${activity}`);
+    };
+
+    const checkPasswordStrength = (password) => {
+      if (password.length >= 12) return "Strong";
+      if (password.length >= 8) return "Medium";
+      return "Weak";
+    };
+
+    const generateSecurePassword = (length = 12) => {
+      const array = new Uint8Array(length);
+      window.crypto.getRandomValues(array);
+      const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+~";
+      let password = "";
+      array.forEach(num => { password += charset[num % charset.length]; });
+      return password;
+    };
+
+    const generateSalt = (length = 16) => {
+      const array = new Uint8Array(length);
+      window.crypto.getRandomValues(array);
+      return btoa(String.fromCharCode.apply(null, array));
+    };
+
+    const PEPPER = "StaticPepperValue123!@#";
+
+    async function hashData(data) {
+      const encoder = new TextEncoder();
+      const dataBuffer = encoder.encode(data);
+      const hashBuffer = await window.crypto.subtle.digest('SHA-256', dataBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function encryptData(data, key, salt) {
+      const iv = window.crypto.getRandomValues(new Uint8Array(12));
+      const encoder = new TextEncoder();
+      const encodedData = encoder.encode(JSON.stringify(data));
+      try {
+        const encrypted = await window.crypto.subtle.encrypt(
+          { name: "AES-GCM", iv },
+          key,
+          encodedData
+        );
+        return { salt, iv: Array.from(iv), ciphertext: Array.from(new Uint8Array(encrypted)) };
+      } catch (e) {
+        console.error("Encryption failed", e);
+        throw e;
+      }
+    }
+
+    async function decryptData(encryptedData, key) {
+      try {
+        const { iv, ciphertext } = encryptedData;
+        const ivUint8 = new Uint8Array(iv);
+        const ciphertextUint8 = new Uint8Array(ciphertext);
+        const decrypted = await window.crypto.subtle.decrypt(
+          { name: "AES-GCM", iv: ivUint8 },
+          key,
+          ciphertextUint8
+        );
+        const decoder = new TextDecoder();
+        return JSON.parse(decoder.decode(decrypted));
+      } catch (e) {
+        console.error("Decryption failed", e);
+        throw e;
+      }
+    }
+
+    async function deriveKey(passphrase, salt) {
+      const encoder = new TextEncoder();
+      const keyMaterial = await window.crypto.subtle.importKey(
+        "raw",
+        encoder.encode(passphrase + PEPPER),
+        { name: "PBKDF2" },
+        false,
+        ["deriveKey"]
+      );
+      return window.crypto.subtle.deriveKey(
+        { name: "PBKDF2", salt: encoder.encode(salt), iterations: 100000, hash: "SHA-256" },
+        keyMaterial,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["encrypt", "decrypt"]
+      );
+    }
+
+    /*******************************
+     * Password Manager Class
+     *******************************/
+    class PasswordManager {
+      constructor() {
+        this.storageKey = 'advancedPasswordManagerData';
+        this.salt = localStorage.getItem('encryptionSalt') || generateSalt();
+        localStorage.setItem('encryptionSalt', this.salt);
+        this.passphrase = "UserProvidedSecret"; 
+        this.keyPromise = deriveKey(this.passphrase, this.salt);
+        this.passwords = [];
+        this.secureNotes = [];
+        this.twoFAEnabled = false;
+        this.loadData();
+      }
+
+      async loadData() {
+        const encrypted = localStorage.getItem(this.storageKey);
+        if (encrypted) {
+          try {
+            const encryptedData = JSON.parse(encrypted);
+            const key = await this.keyPromise;
+            const data = await decryptData(encryptedData, key);
+            this.passwords = data.passwords || [];
+            this.secureNotes = data.secureNotes || [];
+            showNotification("Data loaded successfully.");
+            logActivity("Data loaded from storage.");
+            this.displayPasswordHistory();
+          } catch (e) {
+            showNotification("Failed to load data.", true);
+          }
+        }
+      }
+
+      async saveData() {
+        try {
+          const key = await this.keyPromise;
+          const data = { passwords: this.passwords, secureNotes: this.secureNotes };
+          const encryptedData = await encryptData(data, key, this.salt);
+          localStorage.setItem(this.storageKey, JSON.stringify(encryptedData));
+          showNotification("Data saved securely.");
+          logActivity("Data saved to storage.");
+        } catch (e) {
+          showNotification("Error saving data.", true);
+        }
+      }
+
+      async storePassword(website, username, password) {
+        const timeStamp = new Date().toISOString();
+        const entry = { website, username, password, createdAt: timeStamp, history: [{ password, timeStamp }] };
+        this.passwords.push(entry);
+        await this.saveData();
+        logActivity(`Password stored for ${website}.`);
+        this.displayPasswordHistory();
+      }
+
+      exportPasswords() { return JSON.stringify(this.passwords, null, 2); }
+      
+      async importPasswords(jsonData) {
+        try {
+          const imported = JSON.parse(jsonData);
+          if (Array.isArray(imported)) {
+            this.passwords = imported;
+            await this.saveData();
+            logActivity("Passwords imported successfully.");
+            return true;
+          }
+        } catch (e) {
+          console.error("Import failed", e);
+        }
+        return false;
+      }
+
+      enable2FA() {
+        this.twoFAEnabled = true;
+        showNotification("2FA enabled using TOTP (simulated).");
+        logActivity("2FA enabled.");
+      }
+
+      simulateMFA() {
+        const userInput = prompt("Enter the OTP sent to your registered mobile/email:");
+        if (userInput === "123456") {
+          showNotification("MFA verified successfully.");
+          logActivity("MFA verified.");
+          return true;
+        } else {
+          showNotification("MFA verification failed.", true);
+          logActivity("MFA verification failed.");
+          return false;
+        }
+      }
+
+      auditPasswords() { 
+        const weak = this.passwords.filter(entry => entry.password.length < 8);
+        logActivity("Password audit performed.");
+        return weak;
+      }
+
+      emergencyAccess() { 
+        alert("Emergency access granted after additional verification (simulated).");
+        logActivity("Emergency access granted.");
+      }
+
+      async sharePasswordSecurely(passwordEntry) {
+        const key = await this.keyPromise;
+        const saltLocal = generateSalt();
+        const encrypted = await encryptData(passwordEntry, key, saltLocal);
+        prompt("Share this encrypted password with the recipient:", JSON.stringify(encrypted));
+        logActivity("Password shared securely (simulated).");
+      }
+
+      async saveSecureNote(note, category) {
+        this.secureNotes.push({ note, category, createdAt: new Date().toISOString() });
+        await this.saveData();
+        showNotification("Secure note saved.");
+        logActivity("Secure note saved.");
+      }
+
+      async biometricAuth() {
+        const confirmed = confirm("Simulate biometric authentication. Click OK if authenticated.");
+        logActivity("Biometric authentication " + (confirmed ? "successful." : "failed."));
+        return confirmed;
+      }
+
+      phishingProtectionCheck(url) {
+        const trustedDomains = ['example.com', 'trustedsite.com'];
+        const parser = document.createElement('a');
+        parser.href = url;
+        if (trustedDomains.includes(parser.hostname)) {
+          showNotification("The website appears safe.");
+          logActivity("Phishing check passed for " + url);
+        } else {
+          showNotification("Warning: The website may be unsafe!", true);
+          logActivity("Phishing check failed for " + url);
+        }
+      }
+
+      monitorDataBreach() { 
+        showNotification("No data breach detected (simulated).");
+        logActivity("Data breach monitored.");
+      }
+
+      async syncData() {
+        showNotification("Data synced across devices (simulated).");
+        logActivity("Multi-device sync performed.");
+      }
+
+      async backupData() {
+        const backup = this.exportPasswords();
+        prompt("Backup your data (copy the JSON):", backup);
+        logActivity("Data backup initiated.");
+      }
+
+      async restoreData() {
+        const jsonData = prompt("Paste your backup JSON here:");
+        if (await this.importPasswords(jsonData)) {
+          showNotification("Data restored successfully.");
+          logActivity("Data restored from backup.");
+        } else {
+          showNotification("Restore failed. Check the JSON format.", true);
+        }
+      }
+
+      aiPasswordSuggestion() {
+        const suggestion = "AI_" + Date.now().toString().slice(-6) + "!";
+        alert("AI Suggestion: " + suggestion);
+        logActivity("AI password suggestion provided.");
+      }
+
+      displayPasswordHistory() {
+        const panel = document.getElementById("historyPanel");
+        panel.innerHTML = "";
+        this.passwords.forEach(entry => {
+          const entryDiv = document.createElement("div");
+          entryDiv.style.borderBottom = "1px solid rgba(255,255,255,0.3)";
+          entryDiv.style.padding = "5px 0";
+          entryDiv.innerHTML = `<strong>${entry.website}:</strong> ${entry.history.map(h => `<em>${h.password}</em> (${new Date(h.timeStamp).toLocaleTimeString()})`).join(", ")}`;
+          panel.appendChild(entryDiv);
+        });
+      }
+    }
+
+    /*******************************
+     * Feature Cards Data & Dynamic Loading
+     *******************************/
+    const featuresData = [
+      { icon: "🔒", title: "सुरक्षित पासवर्ड स्टोरेज", description: "एन्क्रिप्शन के साथ पासवर्ड स्टोर करें और डिक्शनरी अटैक्स से सुरक्षित रहें।", tooltip: "आपके पासवर्ड सुरक्षित रहेंगे।", rating: 4 },
+      { icon: "⚙️", title: "ऑटोमेटेड पासवर्ड जनरेशन", description: "मजबूत और यूनिक पासवर्ड जनरेट करने की क्षमता।", tooltip: "स्वचालित पासवर्ड निर्माण।", rating: 5 },
+      { icon: "🛡️", title: "2FA & MFA", description: "TOTP और OTP आधारित प्रमाणीकरण।", tooltip: "दो-कारक प्रमाणीकरण।", rating: 4 },
+      { icon: "🔍", title: "पासवर्ड ऑडिट", description: "कमजोर पासवर्ड की पहचान और सुधार।", tooltip: "पासवर्ड की मजबूती जांचें।", rating: 3 },
+      { icon: "🚨", title: "इमरजेंसी एक्सेस", description: "आपातकालीन स्थिति में एक्सेस प्रदान करें।", tooltip: "आपातकालीन उपयोग के लिए।", rating: 4 },
+      { icon: "📄", title: "सुरक्षित नोट्स", description: "गोपनीय नोट्स सुरक्षित रूप से स्टोर करें।", tooltip: "नोट्स को एन्क्रिप्ट करके रखें।", rating: 5 },
+      { icon: "☁️", title: "मल्टी-डिवाइस सिंक", description: "सभी डिवाइस पर डेटा सिंक्रोनाइज़ करें।", tooltip: "क्लाउड सिंक (सिम्युलेशन)", rating: 4 },
+      { icon: "📝", title: "यूजर एक्टिविटी लॉग", description: "सभी गतिविधियों का लॉग रखें।", tooltip: "गतिविधि ट्रैकिंग", rating: 5 },
+      { icon: "💾", title: "सेक्योर बैकअप/रिस्टोर", description: "डेटा का बैकअप और रिस्टोर करें।", tooltip: "एन्क्रिप्टेड बैकअप", rating: 4 },
+      { icon: "🤖", title: "एआई पासवर्ड सलाह", description: "एआई से पासवर्ड सुझाव प्राप्त करें।", tooltip: "स्मार्ट सलाह", rating: 4 },
+      { icon: "🔄", title: "ऑटो-फिल एक्सटेंशन", description: "ब्राउज़र ऑटो-फिल के लिए सिम्युलेशन।", tooltip: "ऑटो-फिल सपोर्ट", rating: 3 }
+    ];
+    
+    function loadFeatures() {
+      const grid = document.getElementById("featuresGrid");
+      grid.innerHTML = "";
+      featuresData.forEach(feature => {
+        const card = document.createElement("div");
+        card.className = "feature-card";
+        card.setAttribute("tabindex", "0");
+        card.innerHTML = `
+          <div class="feature-icon" aria-hidden="true">${feature.icon}</div>
+          <h4>${feature.title}</h4>
+          <p>${feature.description}</p>
+          <div class="tooltip">${feature.tooltip}</div>
+          <div class="rating" aria-label="Rating: ${feature.rating} out of 5">
+            ${"★".repeat(feature.rating)}${"☆".repeat(5 - feature.rating)}
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+    
+    document.getElementById("featureSearch").addEventListener("input", function() {
+      const query = this.value.toLowerCase();
+      const cards = document.querySelectorAll(".feature-card");
+      cards.forEach(card => {
+        const title = card.querySelector("h4").textContent.toLowerCase();
+        card.style.display = title.includes(query) ? "block" : "none";
+      });
+    });
+    
+    /*******************************
+     * Dark/Light Mode Toggle
+     *******************************/
+    const modeToggle = document.getElementById("modeToggle");
+    modeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      modeToggle.textContent = document.body.classList.contains("dark-mode") ? "Light Mode" : "Dark Mode";
+      logActivity("Theme toggled.");
+    });
+    
+    /*******************************
+     * Language Toggle (Simulated)
+     *******************************/
+    let currentLanguage = "हिंदी";
+    document.getElementById("toggleLanguage").addEventListener("click", () => {
+      currentLanguage = currentLanguage === "हिंदी" ? "English" : "हिंदी";
+      document.getElementById("toggleLanguage").textContent = currentLanguage === "हिंदी" ? "Switch to English" : "स्विच करें हिंदी में";
+      document.querySelector("h2").textContent = currentLanguage === "हिंदी" ? "उन्नत पासवर्ड मैनेजर" : "Advanced Password Manager";
+      logActivity("Language toggled to " + currentLanguage);
+    });
+    
+    /*******************************
+     * Ripple Effect on Buttons
+     *******************************/
+    document.querySelectorAll("button").forEach(btn => {
+      btn.addEventListener("click", function(e) {
+        const circle = document.createElement("span");
+        const diameter = Math.max(this.clientWidth, this.clientHeight);
+        const radius = diameter / 2;
+        circle.style.width = circle.style.height = `${diameter}px`;
+        circle.style.left = `${e.clientX - this.offsetLeft - radius}px`;
+        circle.style.top = `${e.clientY - this.offsetTop - radius}px`;
+        circle.classList.add("ripple");
+        this.appendChild(circle);
+        setTimeout(() => circle.remove(), 600);
+      });
+    });
+    
+    /*******************************
+     * Instantiate Password Manager & Event Listeners
+     *******************************/
+    const manager = new PasswordManager();
+    
+    document.getElementById("generateBtn").addEventListener("click", () => {
+      const pwd = generateSecurePassword();
+      document.getElementById("generatedPassword").value = pwd;
+      document.getElementById("password").value = pwd;
+      document.getElementById("passwordStrength").textContent = "Strength: " + checkPasswordStrength(pwd);
+      logActivity("Password generated.");
+    });
+    
+    document.getElementById("storeBtn").addEventListener("click", async () => {
+      const website = document.getElementById("website").value;
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      if (website && username && password) {
+        await manager.storePassword(website, username, password);
+        showNotification("Password stored successfully!");
+      } else {
+        showNotification("Please fill in all fields.", true);
+      }
+    });
+    
+    document.getElementById("exportBtn").addEventListener("click", () => {
+      document.getElementById("importExportArea").value = manager.exportPasswords();
+      logActivity("Passwords exported (backup).");
+    });
+    
+    document.getElementById("importBtn").addEventListener("click", async () => {
+      const jsonData = document.getElementById("importExportArea").value;
+      if (await manager.importPasswords(jsonData)) {
+        showNotification("Passwords imported successfully!");
+      } else {
+        showNotification("Import failed. Check the JSON format.", true);
+      }
+    });
+    
+    document.getElementById("enable2FABtn").addEventListener("click", () => {
+      manager.enable2FA();
+    });
+    
+    document.getElementById("simulateMFA").addEventListener("click", () => {
+      manager.simulateMFA();
+    });
+    
+    document.getElementById("auditBtn").addEventListener("click", () => {
+      const weak = manager.auditPasswords();
+      if (weak.length > 0) {
+        alert("Weak passwords found:\n" + JSON.stringify(weak, null, 2));
+      } else {
+        alert("All passwords are strong.");
+      }
+    });
+    
+    document.getElementById("emergencyAccessBtn").addEventListener("click", () => {
+      manager.emergencyAccess();
+    });
+    
+    document.getElementById("saveNoteBtn").addEventListener("click", async () => {
+      const note = document.getElementById("secureNote").value;
+      const category = document.getElementById("noteCategory").value;
+      if (note) {
+        await manager.saveSecureNote(note, category);
+      } else {
+        showNotification("Please enter a note.", true);
+      }
+    });
+    
+    document.getElementById("shareBtn").addEventListener("click", async () => {
+      if (manager.passwords.length > 0) {
+        await manager.sharePasswordSecurely(manager.passwords[0]);
+      } else {
+        showNotification("No password available to share.", true);
+      }
+    });
+    
+    document.getElementById("simulateBiometricBtn").addEventListener("click", async () => {
+      if (await manager.biometricAuth()) {
+        showNotification("Biometric authentication successful.");
+      } else {
+        showNotification("Biometric authentication failed.", true);
+      }
+    });
+    
+    document.getElementById("phishingCheckBtn").addEventListener("click", () => {
+      const url = prompt("Enter the URL to check:");
+      if (url) { manager.phishingProtectionCheck(url); }
+    });
+    
+    document.getElementById("syncBtn").addEventListener("click", async () => { await manager.syncData(); });
+    
+    document.getElementById("backupBtn").addEventListener("click", async () => { await manager.backupData(); });
+    
+    document.getElementById("restoreBtn").addEventListener("click", async () => { await manager.restoreData(); });
+    
+    document.getElementById("aiSuggestBtn").addEventListener("click", () => { manager.aiPasswordSuggestion(); });
+    
+    setInterval(() => { manager.monitorDataBreach(); }, 60000);
+    
+    let inactivityTimer;
+    const resetInactivityTimer = () => {
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(() => {
+        alert("Session expired due to inactivity. Please log in again.");
+        logActivity("Session expired due to inactivity.");
+      }, 5 * 60 * 1000);
+    };
+    document.addEventListener("mousemove", resetInactivityTimer);
+    document.addEventListener("keydown", resetInactivityTimer);
+    resetInactivityTimer();
+    
+    setTimeout(loadFeatures, 1000);
+  </script>
+</body>
+</html>
