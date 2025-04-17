@@ -1,1076 +1,224 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Advanced फ़िशिंग वेबसाइट डिटेक्टर</title>
-  <link rel="stylesheet" href="style.css">
-  <!-- (यदि आप Chart.js का उपयोग करना चाहें, तो उसे शामिल करें) -->
-  <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
-<style>/* बेसिक रीसेट */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-/* बॉडी और बैकग्राउंड */
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #74ABE2, #5563DE);
-  color: #333;
-  min-height: 100vh;
-  transition: background 0.5s ease;
-}
-body.dark {
-  background: #222;
-  color: #ddd;
-}
-
-/* Top Bar */
-.top-bar {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  right: 10px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  z-index: 1000;
-}
-.top-bar select,
-.top-bar input[type="number"],
-.top-bar button {
-  padding: 6px 10px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-/* Wrapper & Container */
-.wrapper {
-  width: 100%;
-  padding: 20px;
-  margin-top: 70px;
-}
-.container {
-  background: #fff;
-  max-width: 900px;
-  margin: 0 auto;
-  border-radius: 10px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-  padding: 30px;
-  animation: fadeIn 0.8s ease-out;
-}
-
-/* Header */
-header {
-  text-align: center;
-  margin-bottom: 20px;
-}
-header h1 {
-  font-size: 2em;
-  color: #5563DE;
-  margin-bottom: 10px;
-}
-header p {
-  font-size: 1.1em;
-  color: #555;
-}
-
-/* Input Section */
-.input-section {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-.input-section input[type="text"] {
-  flex: 1;
-  padding: 15px;
-  border: 2px solid #ccc;
-  border-radius: 5px;
-  font-size: 1em;
-  transition: border 0.3s ease;
-}
-.input-section input[type="text"]:focus {
-  border-color: #5563DE;
-  outline: none;
-}
-.input-section button {
-  padding: 15px 25px;
-  background: linear-gradient(135deg, #5563DE, #74ABE2);
-  border: none;
-  color: #fff;
-  font-size: 1em;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-.input-section button:hover {
-  background: linear-gradient(135deg, #74ABE2, #5563DE);
-}
-
-/* Loader & Progress Bar */
-.loader-section {
-  position: relative;
-  height: 30px;
-  margin-bottom: 20px;
-}
-.progress-bar {
-  width: 0%;
-  height: 5px;
-  background-color: #28a745;
-  border-radius: 5px;
-  transition: width 0.5s ease;
-}
-.loader {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 20px;
-  height: 20px;
-  border: 3px solid #ccc;
-  border-top: 3px solid #5563DE;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  display: none;
-}
-
-/* Whois Section */
-.whois {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 0.9em;
-}
-.whois a {
-  color: #5563DE;
-  text-decoration: none;
-  font-weight: bold;
-}
-.whois a:hover {
-  text-decoration: underline;
-}
-
-/* Result Section */
-.result {
-  margin-top: 20px;
-}
-.result .result-section {
-  border-left: 5px solid;
-  padding: 15px;
-  margin-bottom: 15px;
-  border-radius: 5px;
-  background: #f7f7f7;
-  animation: slideIn 0.5s ease-out;
-  line-height: 1.4;
-}
-
-/* Report Download Button */
-.report-download {
-  text-align: center;
-  margin-top: 10px;
-}
-.report-download button {
-  padding: 10px 20px;
-  background-color: #5563DE;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-.report-download button:hover {
-  background-color: #74ABE2;
-}
-
-/* History Section */
-.history {
-  margin-top: 30px;
-}
-.history h2 {
-  text-align: center;
-  margin-bottom: 10px;
-  color: #5563DE;
-}
-.history .history-filter {
-  text-align: center;
-  margin-bottom: 10px;
-}
-.history .history-filter select {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-#historyTable {
-  width: 100%;
-  border-collapse: collapse;
-}
-#historyTable th, #historyTable td {
-  border: 1px solid #ddd;
-  padding: 10px;
-  text-align: center;
-}
-#historyTable th {
-  background-color: #f0f0f0;
-}
-
-/* Dashboard Section */
-.dashboard {
-  margin-top: 30px;
-  text-align: center;
-}
-.dashboard h2 {
-  margin-bottom: 10px;
-  color: #5563DE;
-}
-#dashboardChart {
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-/* News Feed Section */
-.news-feed {
-  margin-top: 30px;
-}
-.news-feed h2 {
-  text-align: center;
-  margin-bottom: 10px;
-  color: #5563DE;
-}
-.news-feed ul {
-  list-style: none;
-  padding: 0;
-  text-align: center;
-}
-.news-feed li {
-  margin-bottom: 5px;
-}
-.news-feed a {
-  color: #5563DE;
-  text-decoration: none;
-}
-.news-feed a:hover {
-  text-decoration: underline;
-}
-
-/* Profile Section */
-.profile {
-  margin-top: 30px;
-  text-align: center;
-}
-.profile h2 {
-  color: #5563DE;
-  margin-bottom: 10px;
-}
-
-/* Feedback Section */
-.feedback {
-  margin-top: 20px;
-  text-align: center;
-}
-.feedback h2 {
-  margin-bottom: 10px;
-}
-.feedback .rating {
-  margin-bottom: 10px;
-}
-.feedback .stars {
-  cursor: pointer;
-  font-size: 1.5em;
-  color: #ccc;
-}
-.feedback .stars .active {
-  color: #ffc107;
-}
-.feedback textarea {
-  width: 80%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  resize: vertical;
-  margin-bottom: 10px;
-}
-.feedback button {
-  padding: 10px 20px;
-  background-color: #5563DE;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-.feedback button:hover {
-  background-color: #74ABE2;
-}
-.feedback #feedbackMessage {
-  margin-top: 10px;
-  font-size: 0.9em;
-  color: #333;
-}
-
-/* Training Module (Modal) */
-.training {
-  margin-top: 30px;
-  text-align: center;
-}
-.training button {
-  padding: 10px 20px;
-  background-color: #5563DE;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-.training button:hover {
-  background-color: #74ABE2;
-}
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1500;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.5);
-}
-.modal-content {
-  background-color: #fff;
-  margin: 10% auto;
-  padding: 20px;
-  border-radius: 10px;
-  max-width: 600px;
-  position: relative;
-}
-.modal-content h2 {
-  margin-bottom: 10px;
-  color: #5563DE;
-}
-.modal-content ul {
-  list-style: disc;
-  padding-left: 20px;
-}
-.close {
-  position: absolute;
-  top: 10px;
-  right: 20px;
-  color: #aaa;
-  font-size: 28px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-/* Responsive */
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Website Checker</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+<style>
+      /* Fade-in animation for result and sections */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
+
+/* Pulse animation for warnings */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Slide-in for tips section */
 @keyframes slideIn {
-  from { opacity: 0; transform: translateX(-20px); }
-  to { opacity: 1; transform: translateX(0); }
+    0% { opacity: 0; transform: translateX(-20px); }
+    100% { opacity: 1; transform: translateX(0); }
 }
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+
+#result.show {
+    display: block !important;
+    animation: fadeIn 0.7s ease-in-out;
 }
-@media (max-width: 600px) {
-  .input-section {
-    flex-direction: column;
-  }
-  .input-section button {
-    width: 100%;
-  }
-}</style>
+
+.warning {
+    animation: pulse 1.5s infinite;
+}
+
+section {
+    animation: slideIn 0.7s ease-in-out;
+}
+
+/* Hover effects for tips */
+li:hover i {
+    color: #1d4ed8;
+    transition: color 0.3s;
+}
+
+/* Input focus effect */
+input:focus + .fas {
+    color: #3b82f6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    header h1 {
+        font-size: 1.5rem;
+    }
+    section h2 {
+        font-size: 1.25rem;
+    }
+}
+    </style>
 </head>
-<body>
-  <!-- Top Bar: Theme, Language, Alert Threshold, Auto-Scan Interval, Login -->
-  <div class="top-bar">
-    <button id="themeToggle">Switch Theme</button>
-    <select id="languageSelect">
-      <option value="hi">हिंदी</option>
-      <option value="en">English</option>
-    </select>
-    <label for="alertThreshold">Alert Threshold (%):</label>
-    <input type="number" id="alertThreshold" value="80" min="0" max="100">
-    <label for="autoScanInterval">Auto-Scan (mins):</label>
-    <input type="number" id="autoScanInterval" value="1440" min="1">
-    <!-- Simple Login Simulation -->
-    <button id="loginBtn">Login</button>
-  </div>
+<body class="bg-cover bg-center min-h-screen flex flex-col" style="background-image: url('assets/background.jpg');">
+    <!-- Header -->
+    <header class="bg-blue-600 text-white p-4 text-center">
+        <h1 class="text-3xl font-bold">Phishing Website Checker</h1>
+        <p class="mt-2">Stay safe online with our advanced phishing detection tool!</p>
+    </header>
 
-  <div class="wrapper">
-    <div class="container">
-      <header>
-        <h1 id="headerTitle">🔍 Advanced फ़िशिंग वेबसाइट डिटेक्टर</h1>
-        <p id="headerDesc">अपनी वेबसाइट का URL डालें और जानें कि यह सुरक्षित है या फ़िशिंग!</p>
-      </header>
-      
-      <!-- Input Section -->
-      <section class="input-section">
-        <input type="text" id="urlInput" placeholder="https://example.com" title="URL दर्ज करें">
-        <button onclick="startScan()">चेक करें</button>
-      </section>
-      
-      <!-- Loader & Progress Bar -->
-      <section class="loader-section">
-        <div id="progressBar" class="progress-bar"></div>
-        <div id="loader" class="loader" title="स्कैन चल रहा है..."></div>
-      </section>
-      
-      <!-- Whois / Domain Info -->
-      <section id="whoisLinkContainer" class="whois"></section>
-      
-      <!-- Detailed Result Section -->
-      <section id="result" class="result"></section>
-      
-      <!-- Report Download Button -->
-      <div class="report-download">
-        <button id="downloadReport" onclick="downloadReport()">Download Report (CSV)</button>
-      </div>
-      
-      <!-- Scan History Section -->
-      <section class="history">
-        <h2>स्कैन इतिहास</h2>
-        <div class="history-filter">
-          <label for="filterSelect">Filter:</label>
-          <select id="filterSelect" onchange="filterHistory()">
-            <option value="all">सभी</option>
-            <option value="safe">सुरक्षित</option>
-            <option value="phishing">संदिग्ध</option>
-          </select>
+    <!-- Main Content -->
+    <main class="flex-grow flex items-center justify-center p-4">
+        <div class="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg w-full max-w-lg">
+            <form id="urlForm" class="flex flex-col">
+                <div class="flex items-center border rounded-md mb-4">
+                    <i class="fas fa-link text-gray-500 p-3"></i>
+                    <input type="url" id="urlInput" placeholder="Enter website URL" class="w-full p-3 outline-none" required>
+                </div>
+                <button type="submit" class="bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 transition duration-300">
+                    <i class="fas fa-search mr-2"></i>Check URL
+                </button>
+            </form>
+            <div id="result" class="mt-6 hidden">
+                <div class="text-center">
+                    <i id="resultIcon" class="text-5xl mb-4"></i>
+                    <p id="resultMessage" class="text-xl font-bold mb-2"></p>
+                    <p id="resultDetails" class="text-gray-700"></p>
+                    <ul id="resultSteps" class="text-left mt-4 space-y-2"></ul>
+                </div>
+            </div>
         </div>
-        <table id="historyTable">
-          <thead>
-            <tr>
-              <th>URL</th>
-              <th>Trust Score</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- हिस्ट्री डेटा लोड होगा -->
-          </tbody>
-        </table>
-      </section>
-      
-      <!-- Dashboard Section (Dummy Chart) -->
-      <section class="dashboard">
-        <h2>डैशबोर्ड</h2>
-        <canvas id="dashboardChart" width="400" height="200"></canvas>
-      </section>
-      
-      <!-- Security News Feed -->
-      <section class="news-feed">
-        <h2>सुरक्षा समाचार</h2>
-        <ul>
-          <li><a href="https://www.phishtank.com/" target="_blank">PhishTank</a></li>
-          <li><a href="https://openphish.com/" target="_blank">OpenPhish</a></li>
-          <li><a href="https://www.us-cert.gov/" target="_blank">US-CERT</a></li>
+    </main>
+
+    <!-- Tips Section -->
+    <section class="bg-white bg-opacity-90 p-8 mx-4 mb-4 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-bold text-center mb-6">Tips to Avoid Phishing Websites</h2>
+        <ul class="space-y-4">
+            <li class="flex items-start">
+                <i class="fas fa-shield-alt text-blue-500 text-2xl mr-3"></i>
+                <span>Check for HTTPS and a valid SSL certificate before entering personal information.</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-eye text-blue-500 text-2xl mr-3"></i>
+                <span>Look for suspicious URLs with misspellings or extra characters.</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-envelope text-blue-500 text-2xl mr-3"></i>
+                <span>Avoid clicking links in unsolicited emails or messages.</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-user-lock text-blue-500 text-2xl mr-3"></i>
+                <span>Use strong, unique passwords and enable two-factor authentication.</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-shield-virus text-blue-500 text-2xl mr-3"></i>
+                <span>Keep your antivirus software updated to detect phishing attempts.</span>
+            </li>
         </ul>
-      </section>
-      
-      <!-- User Profile Section (Simple Simulation) -->
-      <section class="profile">
-        <h2>यूज़र प्रोफ़ाइल</h2>
-        <div id="profileInfo">
-          <p>Last Login: <span id="lastLogin">N/A</span></p>
-          <p>Custom Settings: <span id="customSettings">Default</span></p>
-        </div>
-      </section>
-      
-      <!-- User Feedback Section -->
-      <section id="feedback" class="feedback">
-        <h2>यूज़र फीडबैक</h2>
-        <div class="rating">
-          <span>Rate this scan: </span>
-          <span class="stars" id="stars">★ ★ ★ ★ ★</span>
-        </div>
-        <textarea id="userComment" placeholder="अपनी प्रतिक्रिया लिखें..." rows="3"></textarea>
-        <button onclick="submitFeedback()">Submit Feedback</button>
-        <div id="feedbackMessage"></div>
-      </section>
-      
-      <!-- Security Training Module (Modal) -->
-      <section class="training">
-        <button id="openTraining">सुरक्षा प्रशिक्षण देखें</button>
-        <div id="trainingModal" class="modal">
-          <div class="modal-content">
-            <span class="close" id="closeTraining">&times;</span>
-            <h2>सुरक्षा प्रशिक्षण</h2>
-            <p>यहां पर आपको फ़िशिंग हमलों से बचाव के टिप्स मिलेंगे:</p>
-            <ul>
-              <li>SSL प्रमाणपत्र की जांच करें।</li>
-              <li>दो-चरणीय प्रमाणीकरण का उपयोग करें।</li>
-              <li>संदिग्ध लिंक पर क्लिक न करें।</li>
-              <li>व्यक्तिगत जानकारी साझा न करें।</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-      
-      <!-- Threat Feed Section (Dummy Data) -->
-      <section class="threat-feed">
-        <h2>Live Threat Feed</h2>
-        <ul id="threatFeedList">
-          <!-- Threat feed data loaded from threatFeed.json (if available) -->
-          <li>phishingsite1.com - Reported 10 mins ago</li>
-          <li>scamsite.biz - Reported 20 mins ago</li>
-        </ul>
-      </section>
-      
-    </div>
-  </div>
-  
-  <script>// ----- Global: Load JSON Data -----
-let phishingData = {};
-async function loadPhishingData() {
-  try {
-    const response = await fetch('dhaval.json');
-    phishingData = await response.json();
-    console.log("Phishing data loaded:", phishingData);
-  } catch (error) {
-    console.error("Error loading phishing data:", error);
-  }
-}
+    </section>
 
-// ----- Utility Functions: Loader & Progress -----
-function updateProgress(percent) {
-  document.getElementById("progressBar").style.width = percent + "%";
-}
-function showLoader() {
-  document.getElementById("loader").style.display = "block";
-}
-function hideLoader() {
-  document.getElementById("loader").style.display = "none";
-}
+    <!-- Footer -->
+    <footer class="bg-blue-600 text-white p-4 text-center">
+        <p>&copy; 2025 Phishing Checker. All rights reserved.</p>
+        <p>Stay vigilant, stay safe!</p>
+    </footer>
 
-// ----- Theme Switcher & Language -----
-document.getElementById("themeToggle").addEventListener("click", function() {
-  document.body.classList.toggle("dark");
+    <script>document.getElementById('urlForm').addEventListener('submit', async (e) => {
+e.preventDefault();
+
+const urlInput = document.getElementById('urlInput').value.trim();
+const resultDiv = document.getElementById('result');
+const resultIcon = document.getElementById('resultIcon');
+const resultMessage = document.getElementById('resultMessage');
+const resultDetails = document.getElementById('resultDetails');
+const resultSteps = document.getElementById('resultSteps');
+
+// Reset previous result
+resultDiv.classList.add('hidden');
+resultDiv.classList.remove('show');
+resultIcon.className = 'text-5xl mb-4';
+resultMessage.className = 'text-xl font-bold mb-2';
+resultDetails.className = 'text-gray-700';
+resultSteps.innerHTML = '';
+
+try {
+// Fetch the JSON file
+const response = await fetch('fishing2.2.json');
+if (!response.ok) throw new Error('Failed to load phishing data');
+const phishingURLs = await response.json();
+
+// Normalize URLs for comparison
+const normalizeURL = (url) => {
+try {
+const parsed = new URL(url);
+return parsed.hostname.toLowerCase().replace(/^www\./, '');
+} catch {
+return url.toLowerCase().replace(/^www\./, '');
+}
+};
+
+const inputURL = normalizeURL(urlInput);
+const isPhishing = phishingURLs.some(url => normalizeURL(url) === inputURL);
+
+// Display result
+resultDiv.classList.remove('hidden');
+resultDiv.classList.add('show');
+
+if (isPhishing) {
+resultIcon.classList.add('fas', 'fa-exclamation-triangle', 'text-red-500', 'warning');
+resultMessage.classList.add('text-red-500');
+resultMessage.textContent = 'Danger: This Website Is a Known Phishing Site!';
+resultDetails.textContent = 'Our database has identified this website as a phishing threat. Phishing websites can steal your personal information, such as passwords or credit card details. Take immediate action to protect yourself.';
+
+// Actionable steps
+const steps = [
+{ icon: 'fa-times-circle', text: 'Close the website immediately and do not enter any personal information.' },
+{ icon: 'fa-shield-alt', text: 'Run a malware scan on your device using updated antivirus software.' },
+{ icon: 'fa-exclamation', text: 'Report the website to authorities like Google Safe Browsing or your local cybercrime unit.' },
+{ icon: 'fa-key', text: 'Change passwords for any accounts you may have accessed on this website.' },
+{ icon: 'fa-phone', text: 'Contact your bank if you entered financial information to secure your accounts.' }
+];
+
+steps.forEach(step => {
+const li = document.createElement('li');
+li.className = 'flex items-start';
+li.innerHTML = `<i class="fas ${step.icon} text-red-500 text-xl mr-3"></i><span>${step.text}</span>`;
+resultSteps.appendChild(li);
 });
-document.getElementById("languageSelect").addEventListener("change", function() {
-  const lang = this.value;
-  if(lang === "en") {
-    document.getElementById("headerTitle").innerText = "🔍 Advanced Phishing Website Checker";
-    document.getElementById("headerDesc").innerText = "Enter a website URL to check if it's safe or phishing!";
-  } else {
-    document.getElementById("headerTitle").innerText = "🔍 Advanced फ़िशिंग वेबसाइट डिटेक्टर";
-    document.getElementById("headerDesc").innerText = "अपनी वेबसाइट का URL डालें और जानें कि यह सुरक्षित है या फ़िशिंग!";
-  }
+} else {
+resultIcon.classList.add('fas', 'fa-check-circle', 'text-green-500');
+resultMessage.classList.add('text-green-500');
+resultMessage.textContent = 'Good News: This Website Appears to Be Safe!';
+resultDetails.textContent = 'This website is not listed in our phishing database. However, always verify URLs, check for HTTPS, and stay cautious when sharing personal information online.';
+
+// Encouraging message
+const steps = [
+{ icon: 'fa-lock', text: 'Ensure the website uses HTTPS for secure communication.' },
+{ icon: 'fa-eye', text: 'Double-check the URL for any suspicious characters or misspellings.' },
+{ icon: 'fa-info-circle', text: 'Verify the website’s authenticity by checking reviews or official sources.' }
+];
+
+steps.forEach(step => {
+const li = document.createElement('li');
+li.className = 'flex items-start';
+li.innerHTML = `<i class="fas ${step.icon} text-green-500 text-xl mr-3"></i><span>${step.text}</span>`;
+resultSteps.appendChild(li);
 });
-
-// ----- Dummy Login Simulation -----
-document.getElementById("loginBtn").addEventListener("click", function() {
-  // सिम्पल लॉगिन; वास्तव में, इसको सुरक्षित ऑथेंटिकेशन की आवश्यकता होगी।
-  let username = prompt("Username:");
-  let password = prompt("Password:");
-  if(username && password) {
-    localStorage.setItem("currentUser", username);
-    alert("Welcome, " + username + "!");
-    document.getElementById("profileInfo").innerHTML = `<p>Last Login: ${new Date().toLocaleString()}</p><p>Custom Settings: Default</p>`;
-  }
-});
-
-// ----- Whois Link Update -----
-function updateWhoisLink(url) {
-  const whoisContainer = document.getElementById("whoisLinkContainer");
-  try {
-    let domain = new URL(url).hostname;
-    whoisContainer.innerHTML = `Whois चेक करें: <a href="https://who.is/whois/${domain}" target="_blank">🔍 डोमेन जानकारी देखें</a>`;
-  } catch (error) {
-    console.error("Whois link update error:", error);
-    whoisContainer.innerHTML = "";
-  }
+}
+} catch (error) {
+resultDiv.classList.remove('hidden');
+resultDiv.classList.add('show');
+resultIcon.classList.add('fas', 'fa-times-circle', 'text-yellow-500');
+resultMessage.classList.add('text-yellow-500');
+resultMessage.textContent = 'Error: Unable to Check the Website!';
+resultDetails.textContent = 'We couldn’t load the phishing database. Please try again later or ensure you’re connected to the internet.';
+console.error(error);
 }
 
-// ----- Scan History Management -----
-function saveScanHistory(url, trustScore) {
-  let history = JSON.parse(localStorage.getItem("scanHistory")) || [];
-  history.push({ url: url, trustScore: trustScore, date: new Date().toLocaleString() });
-  localStorage.setItem("scanHistory", JSON.stringify(history));
-  loadHistoryTable();
-}
-function loadHistoryTable() {
-  let history = JSON.parse(localStorage.getItem("scanHistory")) || [];
-  const tbody = document.querySelector("#historyTable tbody");
-  tbody.innerHTML = "";
-  history.forEach(entry => {
-    let row = document.createElement("tr");
-    row.innerHTML = `<td>${entry.url}</td><td>${entry.trustScore}%</td><td>${entry.date}</td>`;
-    tbody.appendChild(row);
-  });
-}
-function filterHistory() {
-  let filter = document.getElementById("filterSelect").value;
-  let threshold = document.getElementById("alertThreshold").value;
-  let history = JSON.parse(localStorage.getItem("scanHistory")) || [];
-  const tbody = document.querySelector("#historyTable tbody");
-  tbody.innerHTML = "";
-  history.filter(entry => {
-    if (filter === "all") return true;
-    if (filter === "safe" && entry.trustScore >= threshold) return true;
-    if (filter === "phishing" && entry.trustScore < threshold) return true;
-    return false;
-  }).forEach(entry => {
-    let row = document.createElement("tr");
-    row.innerHTML = `<td>${entry.url}</td><td>${entry.trustScore}%</td><td>${entry.date}</td>`;
-    tbody.appendChild(row);
-  });
-}
-
-// ----- Report Download as CSV -----
-function downloadReport() {
-  let history = JSON.parse(localStorage.getItem("scanHistory")) || [];
-  let csvContent = "data:text/csv;charset=utf-8,URL,Trust Score,Date\n";
-  history.forEach(entry => {
-    csvContent += `${entry.url},${entry.trustScore}%,${entry.date}\n`;
-  });
-  const encodedUri = encodeURI(csvContent);
-  const link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
-  link.setAttribute("download", "scan_history.csv");
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
-
-// ----- Dummy Check Functions (सिम्युलेटेड) -----
-function isSuspiciousURL(url) {
-  const keywords = ["free", "login", "verify", "bank", "secure"];
-  for (let k of keywords) {
-    if (url.toLowerCase().includes(k)) return true;
-  }
-  return false;
-}
-function isShortenedURL(url) {
-  const shorteners = ["bit.ly", "t.co", "tinyurl.com"];
-  return shorteners.some(s => url.includes(s));
-}
-async function checkWebsiteSpeed(url) {
-  try {
-    let start = performance.now();
-    await fetch(url);
-    let end = performance.now();
-    return Math.round(end - start);
-  } catch {
-    return null;
-  }
-}
-async function checkBrokenImages(url) {
-  try {
-    let response = await fetch(url);
-    let html = await response.text();
-    let imgTags = html.match(/<img[^>]+src="([^">]+)"/g);
-    if (!imgTags || imgTags.length === 0) {
-      return { suspicious: true, message: "⚠️ कोई इमेज नहीं मिली।" };
-    }
-    return { suspicious: false, message: "✅ इमेजेस सही से लोड हो रही हैं।" };
-  } catch {
-    return { suspicious: true, message: "⚠️ इमेज लोड करने में त्रुटि।" };
-  }
-}
-function checkTyposquatting(url) {
-  if (!phishingData.knownBrands) return { suspicious: false, message: "✅ कोई टाइपोस्क्वॉटिंग नहीं।" };
-  try {
-    let domain = new URL(url).hostname.replace("www.", "").toLowerCase();
-    for (let brand of phishingData.knownBrands) {
-      if (domain.includes(brand) && domain !== brand) {
-        return { suspicious: true, message: `🚨 यह साइट ${brand} की नकल कर सकती है!` };
-      }
-    }
-  } catch {}
-  return { suspicious: false, message: "✅ कोई टाइपोस्क्वॉटिंग नहीं।" };
-}
-async function checkMetaTags(url) {
-  try {
-    let response = await fetch(url);
-    let html = await response.text();
-    let titleMatch = html.match(/<title>(.*?)<\/title>/i);
-    let descriptionMatch = html.match(/<meta\s+name=["']description["']\s+content=["'](.*?)["']/i);
-    let title = titleMatch ? titleMatch[1] : "⚠️ कोई Title नहीं मिला।";
-    let description = descriptionMatch ? descriptionMatch[1] : "⚠️ कोई Description नहीं मिला।";
-    let metaMissing = title.startsWith("⚠️") || description.startsWith("⚠️");
-    return { suspicious: metaMissing, message: `✅ Title: ${title}, Description: ${description}` };
-  } catch {
-    return { suspicious: true, message: "⚠️ Meta Tag चेक में त्रुटि।" };
-  }
-}
-async function analyzeContent(url) {
-  try {
-    let response = await fetch(url);
-    let text = await response.text();
-    text = text.toLowerCase();
-    if (text.includes("winner") || text.includes("lottery")) {
-      return { suspicious: true, message: "🚨 'winner' या 'lottery' शब्द मिले!" };
-    }
-    return { suspicious: false, message: "✅ कंटेंट सामान्य प्रतीत होता है।" };
-  } catch {
-    return { suspicious: true, message: "⚠️ कंटेंट एनालिसिस में त्रुटि।" };
-  }
-}
-async function dummyMLCheck(url) {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      if (url.toLowerCase().includes("offer")) {
-        resolve({ suspicious: true, message: "ML: 'offer' पैटर्न पाया गया!" });
-      } else {
-        resolve({ suspicious: false, message: "ML: कोई संदिग्ध पैटर्न नहीं।" });
-      }
-    }, 300);
-  });
-}
-function checkLocalBlacklist(url) {
-  if (!phishingData.localBlacklist) return { suspicious: false, message: "✅ लोकल ब्लैकलिस्ट में नहीं है।" };
-  try {
-    let domain = new URL(url).hostname.toLowerCase();
-    if (phishingData.localBlacklist.includes(domain)) {
-      return { suspicious: true, message: "🚨 यह डोमेन लोकल ब्लैकलिस्ट में है!" };
-    }
-  } catch {}
-  return { suspicious: false, message: "✅ लोकल ब्लैकलिस्ट में नहीं है।" };
-}
-async function trackRedirects(url) {
-  let chain = [];
-  try {
-    let response = await fetch(url, { redirect: 'manual' });
-    if (response.status >= 300 && response.status < 400) {
-      let location = response.headers.get("Location");
-      if (location) chain.push(location);
-      return { redirects: chain.length, chain: chain, finalURL: location || url };
-    }
-  } catch {}
-  return { redirects: 0, chain: [], finalURL: url };
-}
-function getRedirectionVisualization(chain) {
-  return chain.join(" → ");
-}
-function checkDomainPattern(url) {
-  try {
-    let domain = new URL(url).hostname;
-    let hyphens = (domain.match(/-/g) || []).length;
-    let digits = (domain.match(/\d/g) || []).length;
-    if (hyphens > (phishingData.domainPatternData?.hyphenLimit || 2) || digits > 5) {
-      return { suspicious: true, message: "🚨 Domain pattern suspicious (अधिक हाइफ़न/अंक)!" };
-    }
-  } catch {}
-  return { suspicious: false, message: "✅ Domain pattern normal." };
-}
-function detectHomographAttack(url) {
-  try {
-    let domain = new URL(url).hostname;
-    if (/[^\u0000-\u007F]/.test(domain)) {
-      return { suspicious: true, message: "🚨 Homograph attack संभव (Unicode अक्षर)!" };
-    }
-  } catch {}
-  return { suspicious: false, message: "✅ No homograph attack detected." };
-}
-async function analyzeContentStructure(url) {
-  try {
-    let response = await fetch(url);
-    let html = await response.text();
-    let forms = (html.match(/<form[\s>]/gi) || []).length;
-    let links = (html.match(/<a[\s>]/gi) || []).length;
-    if (forms === phishingData.contentStructureData?.formsThreshold && links < phishingData.contentStructureData?.linksThreshold) {
-      return { suspicious: true, message: `🚨 Content structure suspicious (Forms=${forms}, Links=${links}).` };
-    }
-    return { suspicious: false, message: `✅ Content structure normal (Forms=${forms}, Links=${links}).` };
-  } catch {
-    return { suspicious: false, message: "⚠️ Content structure analysis error." };
-  }
-}
-
-// ----- 8. Calculate Trust Score -----
-function calculateTrustScore(metrics) {
-  let score = 100;
-  if (metrics.basicSuspicious) score -= 20;
-  if (metrics.shortURL) score -= 15;
-  if (metrics.typoSquatting) score -= 20;
-  if (metrics.brokenImages) score -= 10;
-  if (metrics.metaMissing) score -= 10;
-  if (metrics.contentSuspicious) score -= 20;
-  score -= metrics.redirects * 10;
-  if (metrics.localBlacklist) score -= 30;
-  if (metrics.mlSuspicious) score -= 20;
-  if (metrics.speed && metrics.speed > 5000) score -= 10;
-  if (metrics.domainPattern) score -= 10;
-  if (metrics.homograph) score -= 10;
-  if (metrics.contentStructure) score -= 10;
-  return Math.max(score, 0);
-}
-function getUserHistoryFeedback(url) {
-  return null; // यहाँ सरल सिम्युलेशन है
-}
-
-// ----- 9. Auto-Scan Scheduler -----
-let autoScanTimer = null;
-function startAutoScan() {
-  const interval = document.getElementById("autoScanInterval").value;
-  if (autoScanTimer) clearInterval(autoScanTimer);
-  // interval in minutes converted to milliseconds
-  autoScanTimer = setInterval(() => {
-    // री-स्कैन करें उन URLs को जो हिस्ट्री में हैं
-    let history = JSON.parse(localStorage.getItem("scanHistory")) || [];
-    if(history.length > 0) {
-      // उदाहरण: अंतिम URL को री-स्कैन करें
-      startScan(history[history.length - 1].url);
-    }
-  }, interval * 60 * 1000);
-  console.log("Auto-scan scheduled every " + interval + " minutes.");
-}
-
-// ----- 10. Dummy Functions for Additional Features -----
-// सोशल मीडिया थ्रेट इंटेलिजेंस (सिम्युलेटेड)
-function socialMediaThreatIntel(url) {
-  return url.toLowerCase().includes("scam");
-}
-// एडवांस्ड एनालिटिक्स रिपोर्ट (सिम्युलेटेड)
-function enhancedAnalyticsReport() {
-  return "ट्रेंड रिपोर्ट: पिछले 7 दिनों में 30% फ़िशिंग स्कैन्स, 70% सुरक्षित।";
-}
-// इंटेलिजेंस अलर्ट विंडो (सिम्युलेटेड)
-function intelligenceAlertWindow() {
-  alert("इंटेलिजेंस अलर्ट: नवीनतम फ़िशिंग तकनीकों के बारे में जानकारी।");
-}
-// कस्टम रिपोर्टिंग टेम्प्लेट (सिम्युलेटेड)
-function customReportingTemplate() {
-  return "विस्तृत रिपोर्ट";
-}
-
-// ----- 11. Dashboard: Draw Dummy Chart -----
-function drawDashboardChart() {
-  const canvas = document.getElementById("dashboardChart");
-  const ctx = canvas.getContext("2d");
-  let history = JSON.parse(localStorage.getItem("scanHistory")) || [];
-  let scores = history.slice(-5).map(entry => entry.trustScore);
-  if (scores.length === 0) scores = [90, 75, 85, 60, 95];
-  let maxScore = 100;
-  let barWidth = (canvas.width - 50) / scores.length;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  scores.forEach((score, i) => {
-    let barHeight = (score / maxScore) * canvas.height;
-    ctx.fillStyle = "#5563DE";
-    ctx.fillRect(25 + i * barWidth, canvas.height - barHeight, barWidth - 10, barHeight);
-    ctx.fillStyle = "#333";
-    ctx.fillText(score + "%", 25 + i * barWidth, canvas.height - barHeight - 5);
-  });
-}
-
-// ----- 12. User Feedback: Rating & Comment -----
-function initRating() {
-  const starsElem = document.getElementById("stars");
-  starsElem.innerHTML = "";
-  for (let i = 1; i <= 5; i++) {
-    let span = document.createElement("span");
-    span.innerText = "★";
-    span.dataset.rating = i;
-    span.addEventListener("click", function() {
-      document.querySelectorAll("#stars span").forEach(s => s.classList.remove("active"));
-      for (let j = 0; j < this.dataset.rating; j++) {
-        document.querySelectorAll("#stars span")[j].classList.add("active");
-      }
-    });
-    starsElem.appendChild(span);
-  }
-}
-initRating();
-function submitFeedback() {
-  let rating = document.querySelectorAll("#stars span.active").length;
-  let comment = document.getElementById("userComment").value;
-  let feedbackData = { rating, comment, date: new Date().toLocaleString() };
-  localStorage.setItem("lastFeedback", JSON.stringify(feedbackData));
-  document.getElementById("feedbackMessage").innerText = "Feedback submitted. Thank you!";
-  if (Notification.permission === "granted") {
-    new Notification("Feedback submitted successfully!");
-  }
-}
-
-// ----- 13. Browser Notification -----
-function sendNotification(message) {
-  if (Notification.permission === "granted") {
-    new Notification(message);
-  } else if (Notification.permission !== "denied") {
-    Notification.requestPermission().then(permission => {
-      if (permission === "granted") new Notification(message);
-    });
-  }
-}
-
-// ----- 14. Training Module Modal Handling -----
-document.getElementById("openTraining").addEventListener("click", function() {
-  document.getElementById("trainingModal").style.display = "block";
-});
-document.getElementById("closeTraining").addEventListener("click", function() {
-  document.getElementById("trainingModal").style.display = "none";
-});
-window.addEventListener("click", function(event) {
-  if (event.target === document.getElementById("trainingModal")) {
-    document.getElementById("trainingModal").style.display = "none";
-  }
-});
-
-// ----- 15. Main Function: Start Scan -----
-async function startScan() {
-  const url = document.getElementById("urlInput").value.trim();
-  const resultDiv = document.getElementById("result");
-  resultDiv.innerHTML = "";
-  
-  if (!url) {
-    resultDiv.innerHTML = `<div class='result-section' style='color:red;'>⚠️ कृपया कोई URL डालें!</div>`;
-    return;
-  }
-  
-  // Load JSON data if not loaded
-  if (!phishingData.localBlacklist) {
-    await loadPhishingData();
-  }
-  
-  updateWhoisLink(url);
-  updateProgress(0);
-  showLoader();
-  
-  // Simulated scanning steps with progress updates
-  await new Promise(r => setTimeout(r, 300)); updateProgress(20);
-  let basicSuspicious = isSuspiciousURL(url);
-  await new Promise(r => setTimeout(r, 300)); updateProgress(30);
-  let shortURL = isShortenedURL(url);
-  await new Promise(r => setTimeout(r, 300)); updateProgress(40);
-  let speed = await checkWebsiteSpeed(url);
-  await new Promise(r => setTimeout(r, 300)); updateProgress(50);
-  let imgCheckObj = await checkBrokenImages(url);
-  await new Promise(r => setTimeout(r, 300)); updateProgress(60);
-  let typoCheckObj = checkTyposquatting(url);
-  await new Promise(r => setTimeout(r, 300)); updateProgress(65);
-  let metaCheckObj = await checkMetaTags(url);
-  await new Promise(r => setTimeout(r, 300)); updateProgress(70);
-  let redirectObj = await trackRedirects(url);
-  let redirViz = redirectObj.chain.length ? getRedirectionVisualization(redirectObj.chain) : "No redirection";
-  await new Promise(r => setTimeout(r, 300)); updateProgress(75);
-  let contentAnalysisObj = await analyzeContent(url);
-  await new Promise(r => setTimeout(r, 300)); updateProgress(80);
-  let mlCheckObj = await dummyMLCheck(url);
-  await new Promise(r => setTimeout(r, 300)); updateProgress(85);
-  let localBlacklistObj = checkLocalBlacklist(url);
-  await new Promise(r => setTimeout(r, 300)); updateProgress(90);
-  let domainPatternObj = checkDomainPattern(url);
-  let homographObj = detectHomographAttack(url);
-  let contentStructureObj = await analyzeContentStructure(url);
-  
-  let userFeedback = getUserHistoryFeedback(url);
-  
-  updateProgress(100);
-  hideLoader();
-  
-  // Additional Features: Social Media Threat, Auto-Scan Scheduler, etc.
-  let socialThreat = socialMediaThreatIntel(url);
-  let analyticsReport = enhancedAnalyticsReport();
-  autoScanScheduleSetup(); // Set up auto-scan based on interval
-  
-  if (socialThreat) {
-    sendNotification("Social Media Alert: This URL is trending as suspicious!");
-  }
-  
-  // Aggregate Metrics & Calculate Trust Score
-  const metrics = {
-    basicSuspicious,
-    shortURL,
-    typoSquatting: typoCheckObj.suspicious,
-    brokenImages: imgCheckObj.suspicious,
-    metaMissing: metaCheckObj.suspicious,
-    contentSuspicious: contentAnalysisObj.suspicious,
-    redirects: redirectObj.redirects,
-    localBlacklist: localBlacklistObj.suspicious,
-    mlSuspicious: mlCheckObj.suspicious,
-    speed,
-    domainPattern: domainPatternObj.suspicious,
-    homograph: homographObj.suspicious,
-    contentStructure: contentStructureObj.suspicious,
-    userFeedback
-  };
-  let overallTrustScore = calculateTrustScore(metrics);
-  
-  // If trust score below threshold, send custom alert
-  if (overallTrustScore < document.getElementById("alertThreshold").value) {
-    sendNotification("Warning: This website appears highly suspicious!");
-  }
-  
-  // Append Results
-  resultDiv.innerHTML += `<div class="result-section" title="Basic URL Analysis" style="border-color:${basicSuspicious ? 'red' : 'green'}; color:${basicSuspicious ? 'red' : 'green'};">
-    Basic URL Check: ${basicSuspicious ? "🚨 संदिग्ध पैटर्न पाए गए!" : "✅ कोई संदिग्ध पैटर्न नहीं।"}
-  </div>`;
-  resultDiv.innerHTML += `<div class="result-section" title="Shortened URL Detection" style="border-color:${shortURL ? 'red' : 'green'}; color:${shortURL ? 'red' : 'green'};">
-    Shortened URL: ${shortURL ? "⚠️ पाया गया" : "✅ नहीं पाया गया"}
-  </div>`;
-  resultDiv.innerHTML += `<div class="result-section" title="Speed Analysis" style="border-color:purple; color:purple;">
-    Speed Check: ${speed ? speed + " ms" : "त्रुटि"}
-  </div>`;
-  resultDiv.innerHTML += `<div class="result-section" title="Image Test" style="border-color:${imgCheckObj.suspicious ? 'red' : 'green'}; color:${imgCheckObj.suspicious ? 'red' : 'green'};">
-    ${imgCheckObj.message}
-  </div>`;
-  resultDiv.innerHTML += `<div class="result-section" title="Typosquatting Analysis" style="border-color:${typoCheckObj.suspicious ? 'red' : 'green'}; color:${typoCheckObj.suspicious ? 'red' : 'green'};">
-    ${typoCheckObj.message}
-  </div>`;
-  resultDiv.innerHTML += `<div class="result-section" title="Meta Tags Analysis" style="border-color:blue; color:blue;">
-    Meta Tags: ${metaCheckObj.message}
-  </div>`;
-  resultDiv.innerHTML += `<div class="result-section" title="Content Analysis" style="border-color:blue; color:blue;">
-    Content Analysis: ${contentAnalysisObj.message}
-  </div>`;
-  resultDiv.innerHTML += `<div class="result-section" title="ML Analysis" style="border-color:blue; color:blue;">
-    ML Analysis: ${mlCheckObj.message}
-  </div>`;
-  resultDiv.innerHTML += `<div class="result-section" title="Local Blacklist" style="border-color:blue; color:blue;">
-    Local Blacklist: ${localBlacklistObj.message}
-  </div>`;
-  resultDiv.innerHTML += `<div class="result-section" title="Redirection" style="border-color:blue; color:blue;">
-    Redirection: ${redirectObj.redirects > 0 ? `${redirViz} (Final: ${redirectObj.finalURL})` : "No redirection"}
-  </div>`;
-  resultDiv.innerHTML += `<div class="result-section" title="DNS Lookup" style="border-color:blue; color:blue;">
-    DNS Lookup: ${simulateDNSLookup(url)}
-  </div>`;
-  resultDiv.innerHTML += `<div class="result-section" title="Domain Pattern" style="border-color:blue; color:blue;">
-    Domain Pattern: ${domainPatternObj.message}
-  </div>`;
-  resultDiv.innerHTML += `<div class="result-section" title="Homograph Detection" style="border-color:blue; color:blue;">
-    Homograph Detection: ${homographObj.message}
-  </div>`;
-  resultDiv.innerHTML += `<div class="result-section" title="Content Structure" style="border-color:blue; color:blue;">
-    Content Structure: ${contentStructureObj.message}
-  </div>`;
-  resultDiv.innerHTML += `<div class="result-section" title="Overall Trust Score" style="border-color:${overallTrustScore < 50 ? 'red' : 'green'}; color:${overallTrustScore < 50 ? 'red' : 'green'};">
-    Trust Score: ${overallTrustScore}%
-  </div>`;
-  
-  // Save History and Update Dashboard
-  saveScanHistory(url, overallTrustScore);
-  loadHistoryTable();
-  drawDashboardChart();
-  
-  // Display Enhanced Analytics Report and Intelligence Alert
-  resultDiv.innerHTML += `<div class="result-section" title="Enhanced Analytics Report" style="border-color:darkblue; color:darkblue;">
-    ${enhancedAnalyticsReport()}
-  </div>`;
-  intelligenceAlertWindow();
-}
-
-// ----- Auto-Scan Scheduler (Set Interval) -----
-function autoScanScheduleSetup() {
-  const interval = document.getElementById("autoScanInterval").value;
-  if(window.autoScanTimer) clearInterval(window.autoScanTimer);
-  window.autoScanTimer = setInterval(() => {
-    let history = JSON.parse(localStorage.getItem("scanHistory")) || [];
-    if(history.length > 0) {
-      // री-स्कैन के लिए अंतिम URL का उपयोग
-      startScan(history[history.length - 1].url);
-    }
-  }, interval * 60 * 1000);
-  console.log("Auto-scan scheduled every " + interval + " minutes.");
-}
-autoScanScheduleSetup();
-
-// ----- Initialize History on Page Load -----
-window.addEventListener("load", function() {
-  loadHistoryTable();
+// Clear input
+document.getElementById('urlInput').value = '';
 });</script>
 </body>
 </html>
