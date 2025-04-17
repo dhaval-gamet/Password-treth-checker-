@@ -11,23 +11,27 @@
   <meta property="og:type" content="website">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     /* Global Styles */
     * {
       box-sizing: border-box;
-    }
-    body {
       margin: 0;
       padding: 0;
-      font-family: 'Roboto', sans-serif;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
       color: #333;
-      background-color: #fff;
+      background-color: #f9f9f9;
       position: relative;
       min-height: 100vh;
+      line-height: 1.6;
     }
     a {
       text-decoration: none;
+      color: inherit;
     }
     
     /* Loader Animation */
@@ -42,6 +46,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      flex-direction: column;
     }
     .spinner {
       border: 8px solid #f3f3f3;
@@ -50,10 +55,15 @@
       width: 60px;
       height: 60px;
       animation: spin 1s linear infinite;
+      margin-bottom: 20px;
     }
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
+    }
+    .loader-text {
+      color: #333;
+      font-size: 1.2rem;
     }
     
     /* Sticky Navigation Bar */
@@ -62,41 +72,68 @@
       top: 0;
       z-index: 1000;
       background-color: #2FD536;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
     .nav-menu {
       list-style: none;
       display: flex;
       justify-content: center;
       margin: 0;
-      padding: 10px 0;
+      padding: 15px 0;
     }
     .nav-menu li {
-      margin: 0 15px;
+      margin: 0 20px;
+      position: relative;
     }
     .nav-menu li a {
       color: #fff;
-      font-weight: bold;
+      font-weight: 500;
       transition: color 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
     .nav-menu li a:hover {
       color: #000;
+    }
+    .nav-menu li a i {
+      font-size: 1.1rem;
     }
     
     /* Header Styling */
     header {
       text-align: center;
-      padding: 20px;
-      background-color: #2FD536;
+      padding: 40px 20px;
+      background: linear-gradient(135deg, #2FD536, #27a82b);
       color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path fill="rgba(255,255,255,0.1)" d="M0,0 L100,0 L100,100 L0,100 Z" /></svg>');
+      opacity: 0.1;
+      pointer-events: none;
     }
     header h1 {
       margin: 0;
-      font-size: 2.5em;
+      font-size: 2.8rem;
+      font-weight: 700;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
     }
     header h3 {
-      margin: 5px 0 0;
-      font-family: serif;
-      font-size: 1.2em;
+      margin: 15px 0 0;
+      font-size: 1.4rem;
+      font-weight: 400;
+      opacity: 0.9;
     }
     
     /* Bubbles Background */
@@ -112,271 +149,560 @@
     .bubbles span {
       position: absolute;
       bottom: -100px;
-      width: 20px;
-      height: 20px;
-      background: #00AAFF;
+      background: rgba(0, 170, 255, 0.5);
       border-radius: 50%;
       opacity: 0.5;
       animation: bubbleAnimation linear infinite;
+      box-shadow: 0 0 10px rgba(0,170,255,0.3);
     }
-    .bubbles span:nth-child(1) { left: 10%; animation-duration: 8s; animation-delay: 0s; }
-    .bubbles span:nth-child(2) { left: 20%; animation-duration: 10s; animation-delay: 2s; width: 30px; height: 30px; }
-    .bubbles span:nth-child(3) { left: 35%; animation-duration: 12s; animation-delay: 4s; width: 25px; height: 25px; }
-    .bubbles span:nth-child(4) { left: 50%; animation-duration: 9s; animation-delay: 1s; width: 40px; height: 40px; }
-    .bubbles span:nth-child(5) { left: 65%; animation-duration: 7s; animation-delay: 3s; width: 20px; height: 20px; }
-    .bubbles span:nth-child(6) { left: 80%; animation-duration: 11s; animation-delay: 2s; width: 35px; height: 35px; }
-    .bubbles span:nth-child(7) { left: 90%; animation-duration: 13s; animation-delay: 5s; width: 45px; height: 45px; }
-    .bubbles span:nth-child(8) { left: 75%; animation-duration: 8s; animation-delay: 5s; width: 25px; height: 25px; }
-    .bubbles span:nth-child(9) { left: 90%; animation-duration: 13s; animation-delay: 0s; width: 45px; height: 45px; }
-    .bubbles span:nth-child(10) { left: 0%; animation-duration: 9s; animation-delay: 0s; width: 45px; height: 45px; }
     @keyframes bubbleAnimation {
       0% { transform: translateY(0); opacity: 0.5; }
       50% { opacity: 1; }
       100% { transform: translateY(-100vh); opacity: 0; }
     }
+    /* Generate bubbles dynamically in JS */
     
     /* Main Content Styling */
     main {
       padding: 20px;
-      margin-top: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
     }
     .content {
       text-align: center;
-      margin-bottom: 40px;
+      margin: 40px 0;
+      padding: 20px;
     }
     .action-button {
-      display: inline-block;
-      padding: 10px 20px;
-      margin: 20px auto;
-      font-size: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 30px;
+      margin: 25px auto;
+      font-size: 1.1rem;
+      font-weight: 600;
       background-color: #8200B0;
       border: none;
-      border-radius: 25px;
+      border-radius: 30px;
       color: #fff;
       cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.3s ease;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(130, 0, 176, 0.3);
     }
     .action-button:hover {
       background-color: #6A0090;
-      transform: scale(1.05);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(130, 0, 176, 0.4);
+    }
+    .action-button i {
+      font-size: 1.2rem;
+    }
+    
+    /* Inspirational Message */
+    .inspiration {
+      background-color: #fff;
+      border-radius: 10px;
+      padding: 30px;
+      margin: 40px auto;
+      max-width: 800px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      text-align: center;
+      border-left: 5px solid #2FD536;
+    }
+    .inspiration h4 {
+      font-size: 1.4rem;
+      color: #333;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+    .inspiration strong {
+      color: #8200B0;
+      font-size: 1.1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
     }
     
     /* Password Tips Section */
     .password-tips {
-      padding: 40px 20px;
+      padding: 60px 20px;
       text-align: center;
       background-color: #F5F5F5;
+      border-radius: 10px;
+      margin: 40px 0;
     }
     .password-tips h2 {
-      margin-bottom: 30px;
+      margin-bottom: 40px;
       color: #333;
+      font-size: 2rem;
+      position: relative;
+      display: inline-block;
+    }
+    .password-tips h2::after {
+      content: "";
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 3px;
+      background-color: #2FD536;
     }
     .tip-container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
       padding: 0 20px;
     }
     .tip-card {
       background-color: #fff;
-      border: 1px solid #ddd;
       border-radius: 10px;
-      padding: 15px;
-      box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease;
+      padding: 25px 20px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      border-top: 3px solid #8200B0;
     }
     .tip-card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-10px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     }
     .tip-icon {
-      font-size: 40px;
+      font-size: 2.5rem;
       color: #8200B0;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
     }
     .tip-text {
-      font-size: 16px;
-      color: #333;
+      font-size: 1rem;
+      color: #555;
+      font-weight: 500;
     }
     
     /* Testimonials Section */
     .testimonials {
-      padding: 40px 20px;
+      padding: 60px 20px;
       background-color: #eef;
       text-align: center;
+      border-radius: 10px;
+      margin: 40px 0;
     }
     .testimonials h2 {
-      margin-bottom: 30px;
+      margin-bottom: 40px;
       color: #333;
+      font-size: 2rem;
+      position: relative;
+      display: inline-block;
+    }
+    .testimonials h2::after {
+      content: "";
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 3px;
+      background-color: #2FD536;
     }
     .testimonial-slider {
       display: flex;
       overflow-x: auto;
       scroll-snap-type: x mandatory;
-      gap: 20px;
+      gap: 30px;
       padding: 20px;
+      scrollbar-width: thin;
+      scrollbar-color: #8200B0 #f1f1f1;
+    }
+    .testimonial-slider::-webkit-scrollbar {
+      height: 8px;
+    }
+    .testimonial-slider::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    .testimonial-slider::-webkit-scrollbar-thumb {
+      background: #8200B0;
+      border-radius: 10px;
     }
     .testimonial {
-      flex: 0 0 300px;
+      flex: 0 0 320px;
       background: #fff;
-      padding: 20px;
+      padding: 30px;
       border-radius: 10px;
       scroll-snap-align: start;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      text-align: left;
+      position: relative;
+    }
+    .testimonial::before {
+      content: "\201C";
+      font-family: Georgia, serif;
+      font-size: 4rem;
+      color: rgba(130, 0, 176, 0.1);
+      position: absolute;
+      top: 10px;
+      left: 20px;
+    }
+    .testimonial p {
+      font-style: italic;
+      color: #555;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
     }
     .testimonial h4 {
-      margin-top: 15px;
-      color: #555;
+      color: #8200B0;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .testimonial h4::before {
+      content: "";
+      display: inline-block;
+      width: 20px;
+      height: 2px;
+      background-color: #8200B0;
     }
     
     /* FAQ Section */
     .faq {
-      padding: 40px 20px;
-      background-color: #fafafa;
+      padding: 60px 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      margin: 40px 0;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
     }
     .faq h2 {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 40px;
       color: #333;
+      font-size: 2rem;
+      position: relative;
+      display: inline-block;
+    }
+    .faq h2::after {
+      content: "";
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 3px;
+      background-color: #2FD536;
     }
     .faq-item {
       margin-bottom: 20px;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 15px;
+    }
+    .faq-item:last-child {
+      border-bottom: none;
     }
     .faq-item h3 {
       cursor: pointer;
       margin: 0;
-      font-size: 18px;
-      color: #8200B0;
-      transition: color 0.3s ease;
+      font-size: 1.2rem;
+      color: #333;
+      transition: all 0.3s ease;
+      padding: 10px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     .faq-item h3:hover {
-      color: #6A0090;
+      color: #8200B0;
+    }
+    .faq-item h3 i {
+      transition: transform 0.3s ease;
+    }
+    .faq-item.active h3 i {
+      transform: rotate(90deg);
     }
     .faq-item p {
       display: none;
-      margin: 5px 0 0;
-      font-size: 16px;
-      color: #555;
+      margin: 10px 0 0 30px;
+      font-size: 1rem;
+      color: #666;
+      line-height: 1.7;
     }
     
     /* Contact Us Section */
     .contact {
-      padding: 40px 20px;
+      padding: 60px 20px;
       background-color: #F0F0F0;
       text-align: center;
+      border-radius: 10px;
+      margin: 40px 0;
     }
     .contact h2 {
-      margin-bottom: 20px;
+      margin-bottom: 30px;
       color: #333;
+      font-size: 2rem;
+      position: relative;
+      display: inline-block;
+    }
+    .contact h2::after {
+      content: "";
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 3px;
+      background-color: #2FD536;
     }
     .contact form {
-      max-width: 500px;
+      max-width: 600px;
       margin: 0 auto;
       text-align: left;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
     }
     .contact label {
       display: block;
-      margin: 10px 0 5px;
-      font-weight: bold;
+      margin: 15px 0 8px;
+      font-weight: 500;
+      color: #555;
     }
     .contact input, .contact textarea {
       width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
       border-radius: 5px;
-      margin-bottom: 15px;
+      margin-bottom: 5px;
+      font-family: 'Poppins', sans-serif;
+      transition: border-color 0.3s ease;
+    }
+    .contact input:focus, .contact textarea:focus {
+      border-color: #8200B0;
+      outline: none;
     }
     .contact button {
-      padding: 10px 20px;
-      font-size: 16px;
+      padding: 12px 30px;
+      font-size: 1rem;
+      font-weight: 500;
       background-color: #2FD536;
       border: none;
       border-radius: 5px;
       color: #fff;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: all 0.3s ease;
+      margin-top: 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
     }
     .contact button:hover {
       background-color: #27a82b;
+      transform: translateY(-2px);
     }
     
     /* Subscription Section */
     .subscribe {
-      padding: 40px 20px;
+      padding: 60px 20px;
       background-color: #fff;
       text-align: center;
+      border-radius: 10px;
+      margin: 40px 0;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
     }
     .subscribe h2 {
-      margin-bottom: 20px;
+      margin-bottom: 30px;
       color: #333;
+      font-size: 2rem;
+      position: relative;
+      display: inline-block;
+    }
+    .subscribe h2::after {
+      content: "";
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 3px;
+      background-color: #2FD536;
+    }
+    .subscribe p {
+      color: #666;
+      max-width: 600px;
+      margin: 0 auto 30px;
     }
     .subscribe form {
-      max-width: 400px;
+      max-width: 500px;
       margin: 0 auto;
-      text-align: center;
+      display: flex;
+      gap: 10px;
     }
     .subscribe input[type="email"] {
-      width: 80%;
-      padding: 10px;
-      border: 1px solid #ccc;
+      flex: 1;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
       border-radius: 5px;
-      margin-right: 5px;
+      font-family: 'Poppins', sans-serif;
     }
     .subscribe button {
-      padding: 10px 20px;
-      font-size: 16px;
+      padding: 12px 25px;
+      font-size: 1rem;
+      font-weight: 500;
       background-color: #8200B0;
       border: none;
       border-radius: 5px;
       color: #fff;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
     }
     .subscribe button:hover {
       background-color: #6A0090;
+      transform: translateY(-2px);
     }
     
     /* Footer / Social Media */
     footer {
-      background-color: #2FD536;
+      background: linear-gradient(135deg, #2FD536, #27a82b);
       color: #fff;
       text-align: center;
-      padding: 20px;
+      padding: 40px 20px;
+      margin-top: 60px;
     }
-    footer .social-media a {
-      margin: 0 10px;
-      color: #fff;
-      font-size: 24px;
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      text-align: left;
+    }
+    .footer-column h3 {
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+      position: relative;
+      display: inline-block;
+    }
+    .footer-column h3::after {
+      content: "";
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 40px;
+      height: 2px;
+      background-color: #fff;
+    }
+    .footer-column p, .footer-column a {
+      color: rgba(255,255,255,0.8);
+      margin-bottom: 10px;
+      display: block;
       transition: color 0.3s ease;
     }
-    footer .social-media a:hover {
-      color: #000;
+    .footer-column a:hover {
+      color: #fff;
+    }
+    .social-media {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .social-media a {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+    .social-media a:hover {
+      background-color: rgba(255,255,255,0.2);
+      transform: translateY(-3px);
+    }
+    .copyright {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.7);
     }
     
     /* Back to Top Button */
     #backToTop {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
+      bottom: 30px;
+      right: 30px;
       background-color: #8200B0;
       color: #fff;
       border: none;
-      padding: 10px 15px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
       cursor: pointer;
       display: none;
-      transition: background-color 0.3s ease;
+      transition: all 0.3s ease;
       z-index: 100;
+      box-shadow: 0 4px 15px rgba(130, 0, 176, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
     }
     #backToTop:hover {
       background-color: #6A0090;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(130, 0, 176, 0.4);
     }
     
     /* Responsive Design */
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 2rem;
+        flex-direction: column;
+        gap: 10px;
+      }
+      header h3 {
+        font-size: 1.1rem;
+      }
+      .nav-menu {
+        flex-wrap: wrap;
+        padding: 10px 0;
+      }
+      .nav-menu li {
+        margin: 5px 10px;
+      }
       .action-button {
-        width: 80%;
+        width: 90%;
+        justify-content: center;
+      }
+      .subscribe form {
+        flex-direction: column;
+      }
+      .testimonial {
+        flex: 0 0 280px;
+      }
+      .footer-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      .footer-column h3::after {
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      .social-media {
+        justify-content: center;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .password-tips, .testimonials, .faq, .contact, .subscribe {
+        padding: 40px 15px;
+      }
+      .tip-container {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -385,57 +711,42 @@
   <!-- Loader -->
   <div id="loader">
     <div class="spinner"></div>
+    <div class="loader-text">Securing Your Passwords...</div>
   </div>
   
   <!-- Bubbles Background -->
-  <div class="bubbles">
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
+  <div class="bubbles" id="bubblesContainer"></div>
   
   <!-- Navigation & Header -->
   <header role="banner">
     <nav role="navigation">
       <ul class="nav-menu">
-        <li><a href="#home">Home</a></li>
-        <li><a href="#strength">Password Strength</a></li>
-        <!-- Recommended alternative -->
-<li>
-  <a href="#about" onclick="about()">About</a>
-</li>
-<li>
-  <a href="#privacy" onclick="privacy()">
-Privacy policy  
-  </a>
-</li>
-        <li><a href="#contact" onclick="contact()">Contact</a></li>
+        <li><a href="#home"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="#strength"><i class="fas fa-shield-alt"></i> Password Strength</a></li>
+        <li><a href="#about" onclick="about()"><i class="fas fa-info-circle"></i> About</a></li>
+        <li><a href="#privacy" onclick="privacy()"><i class="fas fa-lock"></i> Privacy Policy</a></li>
+        <li><a href="#contact" onclick="contact()"><i class="fas fa-envelope"></i> Contact</a></li>
       </ul>
     </nav>
-    <h1>🔐 SecurePass - Password Manager</h1>
-    <h3>👌 Best Password Strength Checker Website</h3>
+    <h1><i class="fas fa-lock"></i> SecurePass - Password Manager</h1>
+    <h3>The Best Password Strength Checker & Security Solution</h3>
   </header>
   
   <!-- Main Content -->
   <main role="main" id="home">
     <!-- Welcome Section -->
     <section class="content">
-      <h2>Welcome to My Home Page</h2>
-      <p>🔐 SecurePass - Your Personal Password Manager</p>
-      <button class="action-button" onclick="openIndex()">Get Started</button>
+      <h2>Welcome to SecurePass</h2>
+      <p>Your Personal Password Manager & Security Solution</p>
+      <button class="action-button" onclick="openIndex()">
+        <i class="fas fa-rocket"></i> Get Started
+      </button>
     </section>
     
     <!-- Inspirational Message -->
-    <section class="content">
-      <h4>"Only a strong password can protect your digital world!"</h4>
-      <strong>👌 Best Tips for a Strong Password 👌</strong>
+    <section class="inspiration">
+      <h4><i class="fas fa-quote-left"></i> Only a strong password can protect your digital world!</h4>
+      <strong><i class="fas fa-lightbulb"></i> Best Tips for a Strong Password</strong>
     </section>
     
     <!-- Password Tips Section -->
@@ -443,28 +754,28 @@ Privacy policy
       <h2>Password Security Tips</h2>
       <div class="tip-container">
         <div class="tip-card">
-          <div class="tip-icon">🔒</div>
-          <div class="tip-text">Use a mix of letters, numbers, and symbols.</div>
+          <div class="tip-icon"><i class="fas fa-lock"></i></div>
+          <div class="tip-text">Use a mix of uppercase, lowercase, numbers, and special characters</div>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">🔑</div>
-          <div class="tip-text">Avoid using easily guessable information.</div>
+          <div class="tip-icon"><i class="fas fa-key"></i></div>
+          <div class="tip-text">Avoid using personal information like birthdays or names</div>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">🛡️</div>
-          <div class="tip-text">Use a unique password for each account.</div>
+          <div class="tip-icon"><i class="fas fa-shield-alt"></i></div>
+          <div class="tip-text">Use unique passwords for each of your accounts</div>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">💡</div>
-          <div class="tip-text">Update your passwords regularly.</div>
+          <div class="tip-icon"><i class="fas fa-sync-alt"></i></div>
+          <div class="tip-text">Change your passwords every 3-6 months</div>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">🔐</div>
-          <div class="tip-text">Use a passphrase with random words for extra security.</div>
+          <div class="tip-icon"><i class="fas fa-passport"></i></div>
+          <div class="tip-text">Consider using passphrases (multiple random words)</div>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">📱</div>
-          <div class="tip-text">Enable two-factor authentication whenever possible.</div>
+          <div class="tip-icon"><i class="fas fa-mobile-alt"></i></div>
+          <div class="tip-text">Enable two-factor authentication whenever possible</div>
         </div>
       </div>
     </section>
@@ -474,16 +785,20 @@ Privacy policy
       <h2>What Our Users Say</h2>
       <div class="testimonial-slider">
         <div class="testimonial">
-          <p>"This website saved my online accounts! Highly recommend."</p>
-          <h4>- User A</h4>
+          <p>"SecurePass completely transformed how I manage my passwords. I no longer worry about security breaches and can access all my accounts easily."</p>
+          <h4><i class="fas fa-user"></i> Rajesh Kumar</h4>
         </div>
         <div class="testimonial">
-          <p>"A must-have tool for every internet user."</p>
-          <h4>- User B</h4>
+          <p>"As someone with over 100 online accounts, SecurePass has been a lifesaver. The password generator is brilliant and the interface is so intuitive."</p>
+          <h4><i class="fas fa-user"></i> Priya Sharma</h4>
         </div>
         <div class="testimonial">
-          <p>"SecurePass made managing passwords effortless and secure."</p>
-          <h4>- User C</h4>
+          <p>"I recommended SecurePass to my entire company after seeing how it improved our security posture. The team features are excellent for businesses."</p>
+          <h4><i class="fas fa-user"></i> Amit Patel</h4>
+        </div>
+        <div class="testimonial">
+          <p>"The cross-platform sync works flawlessly between my phone, tablet and computers. Finally a password manager that just works everywhere!"</p>
+          <h4><i class="fas fa-user"></i> Neha Gupta</h4>
         </div>
       </div>
     </section>
@@ -492,16 +807,20 @@ Privacy policy
     <section class="faq">
       <h2>Frequently Asked Questions</h2>
       <div class="faq-item">
-        <h3 onclick="toggleFAQ(this)">Q1: How do I create a strong password?</h3>
-        <p>A strong password should include a mix of letters, numbers, and special characters.</p>
+        <h3 onclick="toggleFAQ(this)"><i class="fas fa-chevron-right"></i> How do I create a strong password?</h3>
+        <p>A strong password should be at least 12 characters long and include a mix of uppercase letters, lowercase letters, numbers, and special characters. Avoid using common words, phrases, or personal information. Consider using a passphrase made of random words (like "correct horse battery staple") for better memorability and security.</p>
       </div>
       <div class="faq-item">
-        <h3 onclick="toggleFAQ(this)">Q2: How often should I update my password?</h3>
-        <p>It's recommended to update your passwords every 3-6 months.</p>
+        <h3 onclick="toggleFAQ(this)"><i class="fas fa-chevron-right"></i> How often should I change my passwords?</h3>
+        <p>Current security recommendations suggest changing passwords every 3-6 months for critical accounts (email, banking, etc.). However, more important than frequent changes is having a unique, strong password for each account. With SecurePass, you can generate and store strong passwords easily, making regular updates simpler.</p>
       </div>
       <div class="faq-item">
-        <h3 onclick="toggleFAQ(this)">Q3: What is two-factor authentication?</h3>
-        <p>Two-factor authentication adds an extra layer of security by requiring an additional verification step.</p>
+        <h3 onclick="toggleFAQ(this)"><i class="fas fa-chevron-right"></i> What is two-factor authentication (2FA)?</h3>
+        <p>Two-factor authentication adds an extra layer of security beyond just a password. It requires two forms of identification: something you know (your password) and something you have (like your phone for SMS codes or an authenticator app). Even if someone steals your password, they can't access your account without the second factor.</p>
+      </div>
+      <div class="faq-item">
+        <h3 onclick="toggleFAQ(this)"><i class="fas fa-chevron-right"></i> Is SecurePass safe to use?</h3>
+        <p>Absolutely! SecurePass uses military-grade AES-256 encryption to protect your data. Your master password is never stored on our servers, and all data is encrypted before it leaves your device. We also offer optional two-factor authentication for additional security.</p>
       </div>
     </section>
     
@@ -516,33 +835,59 @@ Privacy policy
         <input type="email" id="email" name="email" placeholder="Your Email" required>
         
         <label for="message">Message:</label>
-        <textarea id="message" name="message" rows="4" placeholder="Your Message" required></textarea>
+        <textarea id="message" name="message" rows="5" placeholder="Your Message" required></textarea>
         
-        <button type="submit">Send Message</button>
+        <button type="submit"><i class="fas fa-paper-plane"></i> Send Message</button>
       </form>
     </section>
     
     <!-- Subscription Section -->
     <section class="subscribe">
-      <h2>Subscribe to Our Newsletter</h2>
+      <h2>Stay Updated</h2>
+      <p>Subscribe to our newsletter for the latest security tips, product updates, and special offers.</p>
       <form>
-        <input type="email" placeholder="Enter your email" required>
-        <button type="submit">Subscribe</button>
+        <input type="email" placeholder="Enter your email address" required>
+        <button type="submit"><i class="fas fa-envelope"></i> Subscribe</button>
       </form>
     </section>
   </main>
   
   <!-- Back to Top Button -->
-  <button id="backToTop" onclick="scrollToTop()">↑</button>
+  <button id="backToTop" onclick="scrollToTop()" aria-label="Back to top">
+    <i class="fas fa-arrow-up"></i>
+  </button>
   
   <!-- Footer / Social Media -->
   <footer role="contentinfo">
-    <div class="social-media">
-      <a href="https://facebook.com" target="_blank" aria-label="Facebook">Facebook</a>
-      <a href="https://twitter.com" target="_blank" aria-label="Twitter">Twitter</a>
-      <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn">LinkedIn</a>
+    <div class="footer-content">
+      <div class="footer-column">
+        <h3>SecurePass</h3>
+        <p>Your trusted password manager and security solution since 2025.</p>
+        <div class="social-media">
+          <a href="https://facebook.com" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://twitter.com" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+          <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+          <a href="https://instagram.com" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+      <div class="footer-column">
+        <h3>Quick Links</h3>
+        <a href="#home"><i class="fas fa-chevron-right"></i> Home</a>
+        <a href="#strength"><i class="fas fa-chevron-right"></i> Password Checker</a>
+        <a href="#about" onclick="about()"><i class="fas fa-chevron-right"></i> About Us</a>
+        <a href="#privacy" onclick="privacy()"><i class="fas fa-chevron-right"></i> Privacy Policy</a>
+      </div>
+      <div class="footer-column">
+        <h3>Support</h3>
+        <a href="#contact"><i class="fas fa-chevron-right"></i> Contact Us</a>
+        <a href="#"><i class="fas fa-chevron-right"></i> Help Center</a>
+        <a href="#"><i class="fas fa-chevron-right"></i> FAQs</a>
+        <a href="#"><i class="fas fa-chevron-right"></i> Documentation</a>
+      </div>
     </div>
-    <p>&copy; 2025 SecurePass. All rights reserved.</p>
+    <div class="copyright">
+      <p>&copy; 2025 SecurePass. All rights reserved.</p>
+    </div>
   </footer>
   
   <script>
@@ -551,6 +896,31 @@ Privacy policy
       document.getElementById("loader").style.display = "none";
     });
     
+    // Create bubbles dynamically
+    function createBubbles() {
+      const bubblesContainer = document.getElementById('bubblesContainer');
+      const bubbleCount = 15;
+      
+      for (let i = 0; i < bubbleCount; i++) {
+        const bubble = document.createElement('span');
+        const size = Math.random() * 30 + 10;
+        const left = Math.random() * 100;
+        const duration = Math.random() * 15 + 5;
+        const delay = Math.random() * 5;
+        
+        bubble.style.width = `${size}px`;
+        bubble.style.height = `${size}px`;
+        bubble.style.left = `${left}%`;
+        bubble.style.animationDuration = `${duration}s`;
+        bubble.style.animationDelay = `${delay}s`;
+        
+        bubblesContainer.appendChild(bubble);
+      }
+    }
+    
+    // Initialize bubbles
+    createBubbles();
+    
     // Function to open index.html in a new tab
     function openIndex() {
       window.open("homepage.html", "_blank");
@@ -558,8 +928,18 @@ Privacy policy
     
     // FAQ toggle function
     function toggleFAQ(element) {
-      var faqContent = element.nextElementSibling;
-      faqContent.style.display = faqContent.style.display === "block" ? "none" : "block";
+      const faqItem = element.parentElement;
+      const faqContent = element.nextElementSibling;
+      
+      // Toggle active class
+      faqItem.classList.toggle('active');
+      
+      // Toggle content display
+      if (faqContent.style.display === "block") {
+        faqContent.style.display = "none";
+      } else {
+        faqContent.style.display = "block";
+      }
     }
     
     // Back to Top button functionality
@@ -567,7 +947,7 @@ Privacy policy
     function scrollFunction() {
       var backToTop = document.getElementById("backToTop");
       if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
-        backToTop.style.display = "block";
+        backToTop.style.display = "flex";
       } else {
         backToTop.style.display = "none";
       }
@@ -575,15 +955,25 @@ Privacy policy
     function scrollToTop() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-      function about() {
-    window.open("about.html", "_blank");
-  }
+    
+    // Navigation functions
+    function about() {
+      window.open("about.html", "_blank");
+    }
     function contact() {
-    window.open("contact.html","_blank");
+      window.open("contact.html","_blank");
     }
     function privacy() {
       window.open("privacy policy.html","_blank");
     }
+    
+    // Initialize all FAQ answers as hidden
+    document.addEventListener('DOMContentLoaded', function() {
+      const faqAnswers = document.querySelectorAll('.faq-item p');
+      faqAnswers.forEach(answer => {
+        answer.style.display = 'none';
+      });
+    });
   </script>
 </body>
 </html>
