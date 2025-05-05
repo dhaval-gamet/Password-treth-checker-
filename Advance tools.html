@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔒 Ultimate Password Security Checker</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Chart.js Datalabels Plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+      color: #2c3e50;
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 16px;
+      font-size: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background 0.3s ease;
+    }
+
+    .container {
+      max-width: 100%;
+      width: 500px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      padding: 24px;
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+      text-align: center;
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+      border-radius: 16px 16px 0 0;
+    }
+
+    .header h2 {
+      font-size: 2rem;
+      background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      font-size: 0.95rem;
+      color: #7f8c8d;
+      margin-bottom: 24px;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .input-icon {
+      position: relative;
+    }
+
+    #passwordInput {
+      width: 100%;
+      padding: 12px 44px;
+      border: 2px solid #e0e6ed;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      background: #f8fafc;
+      transition: all 0.3s ease;
+    }
+
+    #passwordInput:focus {
+      border-color: #2575fc;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.2);
+      background: white;
+    }
+
+    .input-icon i {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6a11cb;
+      font-size: 1.1rem;
+    }
+
+    .toggle-password {
+      position: absolute;
+      top: 50%;
+      right: 14px;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #7f8c8d;
+      font-size: 1.1rem;
+      transition: color 0.3s ease;
+    }
+
+    .toggle-password:hover {
+      color: #6a11cb;
+    }
+
+    .strength-meter {
+      margin: 16px 0;
+      height: 8px;
+      background: #e0e6ed;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .strength-meter div {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #ff6b6b, #2ed573);
+      transition: width 0.5s ease;
+    }
+
+    .result {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 8px;
+      display: none;
+      font-size: 0.95rem;
+    }
+
+    .safe {
+      background: rgba(46, 213, 115, 0.2);
+      color: #2ed573;
+    }
+
+    .leaked {
+      background: rgba(244, 67, 54, 0.2);
+      color: #ff6b6b;
+    }
+
+    .complexity {
+      margin-top: 16px;
+      font-size: 0.9rem;
+      color: #2c3e50;
+    }
+
+    .complexity p {
+      margin: 4px 0;
+    }
+
+    .complexity span {
+      font-weight: 600;
+    }
+
+    .suggestions {
+      margin-top: 16px;
+      font-size: 0.9rem;
+      color: #ff6b6b;
+      display: none;
+    }
+
+    .session-timeout {
+      margin-top: 16px;
+      padding: 10px;
+      background: rgba(255, 152, 0, 0.2);
+      color: #ff9800;
+      font-weight: 600;
+      border-radius: 8px;
+      display: none;
+    }
+
+    canvas {
+      max-width: 100%;
+      height: 250px !important;
+      margin: 16px auto;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 8px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(106, 17, 203, 0.3);
+    }
+
+    .dark-mode {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: #e2e8f0;
+    }
+
+    .dark-mode .container {
+      background: rgba(15, 23, 42, 0.95);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .dark-mode #passwordInput {
+      background: #1e293b;
+      border-color: #334155;
+      color: #e2e8f0;
+    }
+
+    .dark-mode #passwordInput:focus {
+      box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.3);
+    }
+
+    .dark-mode canvas {
+      background: rgba(30, 41, 59, 0.8);
+    }
+
+    .dark-mode .header p {
+      color: #94a3b8;
+    }
+
+    .dark-mode .complexity {
+      color: #e2e8f0;
+    }
+
+    .dark-mode .strength-meter {
+      background: #334155;
+    }
+
+    .dark-mode .strength-meter div {
+      background: linear-gradient(90deg, #ff8787, #6ee7b7);
+    }
+
+    .dark-mode .safe {
+      background: rgba(46, 213, 115, 0.3);
+      color: #6ee7b7;
+    }
+
+    .dark-mode .leaked {
+      background: rgba(244, 67, 54, 0.3);
+      color: #ff8787;
+    }
+
+    .dark-mode .session-timeout {
+      background: rgba(255, 152, 0, 0.3);
+      color: #ffca7a;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .container > * {
+      animation: fadeIn 0.6s ease forwards;
+    }
+
+    .header { animation-delay: 0.1s; }
+    .input-group { animation-delay: 0.2s; }
+    .strength-meter { animation-delay: 0.3s; }
+    .result { animation-delay: 0.4s; }
+    .complexity { animation-delay: 0.5s; }
+    .suggestions { animation-delay: 0.6s; }
+    canvas { animation-delay: 0.7s; }
+    button { animation-delay: 0.8s; }
+
+    @media (min-width: 768px) {
+      body {
+        padding: 24px;
+      }
+
+      .container {
+        width: 600px;
+        padding: 32px;
+      }
+
+      .header h2 {
+        font-size: 2.5rem;
+      }
+
+      .header p {
+        font-size: 1.1rem;
+      }
+
+      #passwordInput {
+        padding: 14px 48px;
+        font-size: 1rem;
+      }
+
+      canvas {
+        height: 300px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2><i class="fas fa-shield-alt"></i> Ultimate Password Security Checker</h2>
+      <p>Check for leaks, analyze complexity, and get security tips</p>
+    </div>
+
+    <div class="input-group">
+      <div class="input-icon">
+        <i class="fas fa-key"></i>
+        <input type="password" id="passwordInput" placeholder="Enter your password" aria-label="Enter your password">
+        <button type="button" class="toggle-password" id="togglePasswordBtn" aria-label="Toggle password visibility">
+          <i id="toggleIcon" class="fas fa-eye"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="strength-meter">
+      <div id="strengthBar"></div>
+    </div>
+
+    <div id="result" class="result"></div>
+    <div id="suggestions" class="suggestions"></div>
+    <div id="complexity" class="complexity"></div>
+    <canvas id="complexityChart" role="img" aria-label="Password complexity chart showing length, uppercase, lowercase, numbers, and special characters"></canvas>
+    <div id="sessionTimeout" class="session-timeout">Session expires in <span id="countdown">60</span> seconds due to inactivity.</div>
+
+    <button id="generatePasswordBtn">
+      <i class="fas fa-lock"></i> Generate Strong Password
+    </button>
+    <button id="exportChartBtn">
+      <i class="fas fa-download"></i> Export Chart
+    </button>
+    <button id="toggleDarkModeBtn">
+      <i class="fas fa-moon"></i> Toggle Dark Mode
+    </button>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const leakedPasswords = ["123456", "password123", "qwerty", "letmein"];
+      let sessionTimer, countdownTimer;
+      let strengthChart;
+
+      // Gradient creation function
+      function createGradient(ctx, height, colorStart, colorEnd) {
+        const fallbackHeight = height || 250;
+        const gradient = ctx.createLinearGradient(0, 0, 0, fallbackHeight);
+        gradient.addColorStop(0, colorStart);
+        gradient.addColorStop(1, colorEnd);
+        return gradient;
+      }
+
+      // Chart.js configuration
+      let chartConfig = {
+        type: 'bar',
+        data: {
+          labels: ['Length (12+)', 'Uppercase', 'Lowercase', 'Numbers', 'Special Chars'],
+          datasets: [{
+            label: 'Password Complexity',
+            data: [0, 0, 0, 0, 0],
+            backgroundColor: (context) => {
+              const index = context.dataIndex;
+              const colors = [
+                ['#6a11cb', '#2575fc'],
+                ['#1e90ff', '#00b7eb'],
+                ['#2ed573', '#00a550'],
+                ['#ffa502', '#ff6b6b'],
+                ['#ff4757', '#e03131']
+              ];
+              return createGradient(context.chart.ctx, context.chart.chartArea?.height, colors[index][0], colors[index][1]);
+            },
+            borderColor: ['#6a11cb', '#1e90ff', '#2ed573', '#ffa502', '#ff4757'],
+            borderWidth: 2,
+            borderRadius: 10,
+            borderSkipped: false,
+            barThickness: 40,
+            hoverBackgroundColor: (context) => {
+              const index = context.dataIndex;
+              const colors = [
+                ['#8e44ad', '#3498db'],
+                ['#3498db', '#00ced1'],
+                ['#51cf66', '#009432'],
+                ['#ff922b', '#ff4757'],
+                ['#ff6b6b', '#c0392b']
+              ];
+              return createGradient(context.chart.ctx, context.chart.chartArea?.height, colors[index][0], colors[index][1]);
+            }
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 1,
+              ticks: {
+                stepSize: 1,
+                callback: value => value === 1 ? 'Present' : 'Absent',
+                font: { size: 12, weight: '600' },
+                color: '#2c3e50'
+              },
+              grid: { display: false }
+            },
+            x: {
+              grid: { display: false },
+              ticks: {
+                font: { size: 12, weight: '500' },
+                color: '#2c3e50',
+                maxRotation: 45,
+                minRotation: 45
+              }
+            }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              enabled: true,
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              titleFont: { size: 14, weight: '600' },
+              bodyFont: { size: 12 },
+              padding: 12,
+              cornerRadius: 8,
+              callbacks: {
+                title: context => context[0].label,
+                label: context => {
+                  const descriptions = [
+                    'Password should be at least 12 characters long',
+                    'Includes at least one uppercase letter (A-Z)',
+                    'Includes at least one lowercase letter (a-z)',
+                    'Includes at least one number (0-9)',
+                    'Includes at least one special character (e.g., !@#$%)'
+                  ];
+                  return `${context.raw === 1 ? 'Present' : 'Absent'}: ${descriptions[context.dataIndex]}`;
+                }
+              }
+            },
+            datalabels: {
+              color: '#2c3e50',
+              font: { size: 12, weight: '600' },
+              formatter: value => value === 1 ? 'Present' : 'Absent',
+              anchor: 'end',
+              align: 'top',
+              offset: 10
+            }
+          },
+          animation: {
+            duration: 1200,
+            easing: 'easeOutQuart'
+          },
+          maintainAspectRatio: false
+        },
+        plugins: [ChartDataLabels]
+      };
+
+      // Initialize Chart.js
+      strengthChart = new Chart(document.getElementById('complexityChart').getContext('2d'), chartConfig);
+
+      // Cache DOM elements
+      const passwordInput = document.getElementById('passwordInput');
+      const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+      const generatePasswordBtn = document.getElementById('generatePasswordBtn');
+      const exportChartBtn = document.getElementById('exportChartBtn');
+      const toggleDarkModeBtn = document.getElementById('toggleDarkModeBtn');
+
+      // Bind event listeners
+      passwordInput.addEventListener('input', checkPasswordLeak);
+      togglePasswordBtn.addEventListener('click', togglePasswordVisibility);
+      generatePasswordBtn.addEventListener('click', generateStrongPassword);
+      exportChartBtn.addEventListener('click', exportChart);
+      toggleDarkModeBtn.addEventListener('click', toggleDarkMode);
+
+      function checkPasswordLeak() {
+        const password = passwordInput.value;
+        const resultDiv = document.getElementById('result');
+        const complexityDiv = document.getElementById('complexity');
+        const suggestionsDiv = document.getElementById('suggestions');
+
+        // Reset session timer
+        resetSessionTimer();
+
+        // Check if password is leaked
+        if (password && leakedPasswords.includes(password)) {
+          resultDiv.style.display = 'block';
+          resultDiv.className = 'result leaked';
+          resultDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Warning: This password has been leaked in a data breach! Please change it immediately.';
+        } else if (password) {
+          resultDiv.style.display = 'block';
+          resultDiv.className = 'result safe';
+          resultDiv.innerHTML = '<i class="fas fa-check-circle"></i> Good news: Your password is safe and hasn’t been leaked in a known data breach.';
+        } else {
+          resultDiv.style.display = 'none';
+        }
+
+        // Analyze password complexity
+        const complexity = analyzePasswordComplexity(password);
+        updateChart(complexity);
+        updateStrengthMeter(complexity.score);
+
+        complexityDiv.style.display = password ? 'block' : 'none';
+        complexityDiv.innerHTML = `
+          <p>Length: <span>${complexity.length}</span></p>
+          <p>Uppercase Letters: <span>${complexity.uppercase}</span></p>
+          <p>Lowercase Letters: <span>${complexity.lowercase}</span></p>
+          <p>Numbers: <span>${complexity.numbers}</span></p>
+          <p>Special Characters: <span>${complexity.special}</span></p>
+          <p>Repetitive Characters: <span>${complexity.repetitive ? 'Yes' : 'No'}</span></p>
+          <p>Sequential Characters: <span>${complexity.sequential ? 'Yes' : 'No'}</span></p>
+          <p>Estimated Crack Time: <span>${complexity.crackTime}</span></p>
+          <p>Total Complexity Score: <span>${complexity.score}/5</span></p>
+        `;
+
+        // Provide real-time suggestions
+        const suggestions = getSuggestions(complexity);
+        suggestionsDiv.style.display = suggestions.length > 0 ? 'block' : 'none';
+        suggestionsDiv.innerHTML = suggestions.length > 0 ? `<p><i class="fas fa-lightbulb"></i> Suggestions: ${suggestions.join(', ')}</p>` : '';
+      }
+
+      function analyzePasswordComplexity(password) {
+        const length = password.length;
+        const uppercase = (password.match(/[A-Z]/g) || []).length;
+        const lowercase = (password.match(/[a-z]/g) || []).length;
+        const numbers = (password.match(/\d/g) || []).length;
+        const special = (password.match(/[!@#$%^&*(),.?":{}|<>]/g) || []).length;
+
+        // Check for repetitive characters (e.g., "aaa")
+        const repetitive = /(.)\1{2,}/.test(password);
+        // Check for sequential characters (e.g., "abcd")
+        const sequential = /(?:abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz|012|123|234|345|456|567|678|789)/i.test(password);
+
+        let score = 0;
+        if (length >= 12) score++;
+        if (uppercase >= 1) score++;
+        if (lowercase >= 1) score++;
+        if (numbers >= 1) score++;
+        if (special >= 1) score++;
+
+        // Estimate crack time (simplified)
+        const charsetSize = (uppercase ? 26 : 0) + (lowercase ? 26 : 0) + (numbers ? 10 : 0) + (special ? 15 : 0);
+        const attemptsPerSecond = 1e9; // 1 billion attempts per second (modern hardware)
+        const possibleCombinations = charsetSize ** length;
+        const secondsToCrack = possibleCombinations / attemptsPerSecond;
+        let crackTime = 'Instant';
+        if (secondsToCrack > 1e12) crackTime = 'Centuries';
+        else if (secondsToCrack > 1e9) crackTime = 'Millennia';
+        else if (secondsToCrack > 1e6) crackTime = 'Years';
+        else if (secondsToCrack > 86400) crackTime = `${Math.round(secondsToCrack / 86400)} Days`;
+        else if (secondsToCrack > 3600) crackTime = `${Math.round(secondsToCrack / 3600)} Hours`;
+        else if (secondsToCrack > 60) crackTime = `${Math.round(secondsToCrack / 60)} Minutes`;
+        else if (secondsToCrack > 1) crackTime = `${Math.round(secondsToCrack)} Seconds`;
+
+        return { length, uppercase, lowercase, numbers, special, repetitive, sequential, crackTime, score };
+      }
+
+      function getSuggestions(complexity) {
+        const suggestions = [];
+        if (complexity.length < 12) suggestions.push('Increase length to 12+ characters');
+        if (complexity.uppercase < 1) suggestions.push('Add uppercase letters');
+        if (complexity.lowercase < 1) suggestions.push('Add lowercase letters');
+        if (complexity.numbers < 1) suggestions.push('Add numbers');
+        if (complexity.special < 1) suggestions.push('Add special characters');
+        if (complexity.repetitive) suggestions.push('Avoid repetitive characters');
+        if (complexity.sequential) suggestions.push('Avoid sequential characters');
+        return suggestions;
+      }
+
+      function updateChart(complexity) {
+        const data = [
+          complexity.length >= 12 ? 1 : 0,
+          complexity.uppercase >= 1 ? 1 : 0,
+          complexity.lowercase >= 1 ? 1 : 0,
+          complexity.numbers >= 1 ? 1 : 0,
+          complexity.special >= 1 ? 1 : 0
+        ];
+        strengthChart.data.datasets[0].data = data;
+        strengthChart.update();
+      }
+
+      function updateStrengthMeter(score) {
+        const strengthBar = document.getElementById('strengthBar');
+        const percentage = (score / 5) * 100;
+        strengthBar.style.width = `${percentage}%`;
+      }
+
+      function resetSessionTimer() {
+        clearTimeout(sessionTimer);
+        clearInterval(countdownTimer);
+
+        const sessionTimeoutDiv = document.getElementById('sessionTimeout');
+        const countdownSpan = document.getElementById('countdown');
+        sessionTimeoutDiv.style.display = 'none';
+
+        let countdown = 60;
+        countdownSpan.textContent = countdown;
+
+        sessionTimer = setTimeout(() => {
+          sessionTimeoutDiv.style.display = 'block';
+          countdownTimer = setInterval(() => {
+            countdown--;
+            countdownSpan.textContent = countdown;
+            if (countdown <= 0) {
+              clearInterval(countdownTimer);
+              alert('Session expired due to inactivity.');
+              passwordInput.value = '';
+              checkPasswordLeak();
+            }
+          }, 1000);
+        }, 60000); // 1 minute of inactivity
+      }
+
+      function generateStrongPassword() {
+        const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
+        let password = "";
+        for (let i = 0; i < 16; i++) {
+          const randomIndex = Math.floor(Math.random() * charset.length);
+          password += charset[randomIndex];
+        }
+        passwordInput.value = password;
+        checkPasswordLeak();
+      }
+
+      function togglePasswordVisibility() {
+        const toggleIcon = document.getElementById('toggleIcon');
+        if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          toggleIcon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+          passwordInput.type = 'password';
+          toggleIcon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+      }
+
+      function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        chartConfig.options.scales.y.ticks.color = isDarkMode ? '#e2e8f0' : '#2c3e50';
+        chartConfig.options.scales.x.ticks.color = isDarkMode ? '#e2e8f0' : '#2c3e50';
+        chartConfig.options.plugins.datalabels.color = isDarkMode ? '#e2e8f0' : '#2c3e50';
+        chartConfig.data.datasets[0].backgroundColor = (context) => {
+          const index = context.dataIndex;
+          const colors = isDarkMode
+            ? [
+                ['#9b59b6', '#3498db'],
+                ['#60a5fa', '#00b7eb'],
+                ['#4ade80', '#22c55e'],
+                ['#fbbf24', '#f97316'],
+                ['#f87171', '#dc2626']
+              ]
+            : [
+                ['#6a11cb', '#2575fc'],
+                ['#1e90ff', '#00b7eb'],
+                ['#2ed573', '#00a550'],
+                ['#ffa502', '#ff6b6b'],
+                ['#ff4757', '#e03131']
+              ];
+          return createGradient(context.chart.ctx, context.chart.chartArea?.height, colors[index][0], colors[index][1]);
+        };
+        chartConfig.data.datasets[0].borderColor = isDarkMode
+          ? ['#9b59b6', '#60a5fa', '#4ade80', '#fbbf24', '#f87171']
+          : ['#6a11cb', '#1e90ff', '#2ed573', '#ffa502', '#ff4757'];
+        chartConfig.data.datasets[0].hoverBackgroundColor = (context) => {
+          const index = context.dataIndex;
+          const colors = isDarkMode
+            ? [
+                ['#c3a0e6', '#60a5fa'],
+                ['#93c5fd', '#00ced1'],
+                ['#86efac', '#16a34a'],
+                ['#fcd34d', '#ea580c'],
+                ['#fca5a5', '#b91c1c']
+              ]
+            : [
+                ['#8e44ad', '#3498db'],
+                ['#3498db', '#00ced1'],
+                ['#51cf66', '#009432'],
+                ['#ff922b', '#ff4757'],
+                ['#ff6b6b', '#c0392b']
+              ];
+          return createGradient(context.chart.ctx, context.chart.chartArea?.height, colors[index][0], colors[index][1]);
+        };
+        strengthChart.destroy();
+        strengthChart = new Chart(document.getElementById('complexityChart').getContext('2d'), chartConfig);
+        checkPasswordLeak();
+      }
+
+      function exportChart() {
+        const link = document.createElement('a');
+        link.href = strengthChart.toBase64Image();
+        link.download = 'password-complexity-chart.png';
+        link.click();
+      }
+    });
+  </script>
+</body>
+</html>
