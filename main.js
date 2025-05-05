@@ -202,3 +202,35 @@ function openMyPage() {
 function Chatbot() {
   window.open("Chatbot.html", "_blank");
 }
+function fishinghtml() {
+  window.open("fishing.html", "_blank")
+}
+function Advancetoolshtml() {
+  window.open("Advance tools.html", "_blank")}
+  // Ta
+
+// पासवर्ड कॉपी फंक्शन
+function copySuggestedPassword() {
+  const suggestedPassword = document.getElementById("suggested-password").innerText;
+  navigator.clipboard.writeText(suggestedPassword).then(() => {
+    alert("पासवर्ड कॉपी किया गया!");
+  }).catch(err => {
+    console.error("कॉपी करने में त्रुटि:", err);
+  });
+}
+
+// पासवर्ड दिखाएं/छिपाएं फंक्शन
+function togglePasswordVisibility() {
+  const passwordInput = document.getElementById("password");
+  const toggleIcon = document.getElementById("toggleIcon");
+  
+  if (passwordInput.type === "password") {
+    passwordInput.type = "text";
+    toggleIcon.classList.remove("fa-eye");
+    toggleIcon.classList.add("fa-eye-slash");
+  } else {
+    passwordInput.type = "password";
+    toggleIcon.classList.remove("fa-eye-slash");
+    toggleIcon.classList.add("fa-eye");
+  }
+}
