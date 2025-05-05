@@ -5,470 +5,483 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🔐 SecurePass - पासवर्ड मैनेजर</title>
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- zxcvbn लाइब्रेरी -->
+  <!-- zxcvbn Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js"></script>
-  <link rel="stylesheet" href="style.css">
   <style>
-    /* CSS वेरिएबल्स */
-    :root {
-      --bg-light: #f0f4f8;
-      --bg-dark: #121212;
-      --primary-color: #6200ea;
-      --secondary πάνी-color: #03dac6;
-      --accent-color: #ff4081;
-      --text-light: #333;
-      --text-dark: #eee;
-      --font-main: 'Montserrat', sans-serif;
-      --gradient-anim: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(98,0,234,0.5));
-      --card-bg-light: rgba(255, 255, 255, 0.9);
-      --card-bg-dark: rgba(30, 30, 30, 0.9);
-    }
-
-    /* बेस रीसेट */
+    /* Reset and Base Styles */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
-    /* कस्टम कर्सर */
     body {
-      cursor: url('cursor.png'), auto; /* custom cursor image, यदि उपलब्ध हो */
-      font-family: var(--font-main);
-      overflow-x: hidden;
-      background-color: var(--bg-light);
-      transition: background-color 0.3s ease;
+      font-family: 'Poppins', 'Noto Sans Devanagari', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+      color: #2c3e50;
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 16px;
+      font-size: 16px;
     }
 
-    /* वीडियो बैकग्राउंड कंटेनर */
-    .video-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -20;
-      overflow: hidden;
-    }
-
-    #bg-video {
-      min-width: 100%;
-      min-height: 100%;
-      object-fit: cover;
-      transform: scale(1.1); /* हल्का zoom */
-    }
-
-    .video-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: var(--gradient-anim);
-      animation: gradientShift 10s ease infinite;
-      z-index: 1;
-    }
-
-    /* ग्रैडिएंट एनिमेशन */
-    @keyframes gradientShift {
-      0% {
-        filter: hue-rotate(0deg);
-      }
-      50% {
-        filter: hue-rotate(180deg);
-      }
-      100% {
-        filter: hue-rotate(360deg);
-      }
-    }
-
-    /* मुख्य कंटेनर स्टाइल */
+    /* Main Container */
     .container {
+      max-width: 100%;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      padding: 20px;
       position: relative;
-      z-index: 5;
-      background: var(--card-bg-light);
-      width: 100%;
-      max-width: 800px;
-      margin: 80px auto;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 20px 30px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
     }
 
-    .container:hover {
-      transform: scale(1.02);
-    }
-
-    /* हेडिंग और टेक्स्ट स्टाइल */
-    .header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      font-size: 3rem;
-      color: var(--primary-color);
-      margin-bottom: 10px;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-    }
-
-    h3 {
-      font-size: 1.8rem;
-      margin-bottom: 20px;
-      color: var(--secondary-color);
-    }
-
-    p {
-      font-size: 1rem;
-      margin: 10px 0;
-    }
-
-    /* इनपुट और बटन स्टाइल */
-    .input-group {
-      margin-bottom: 25px;
-    }
-
-    input, button, .btn {
-      width: 100%;
-      padding: 15px;
-      margin: 10px 0;
-      border: none;
-      outline: none;
-      border-radius: 50px;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-    }
-
-    input {
-      border: 2px solid var(--primary-color);
-      background: rgba(255, 255, 255, 0.8);
-      padding-left: 45px;
-    }
-
-    input:focus {
-      border-color: var(--accent-color);
-      box-shadow: 0 0 10px var(--accent-color);
-    }
-
-    .input-icon {
-      position: relative;
-    }
-
-    .input-icon i {
-      position: absolute;
-      left: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--primary-color);
-      font-size: 1.2rem;
-    }
-
-    button, .btn {
-      background: var(--primary-color);
-      color: #fff;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      position: relative;
-      overflow: hidden;
-      transform-style: preserve-3d;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    /* Ripple Effect बटन पर */
-    button::after, .btn::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      background: rgba(255,255,255,0.4);
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      transition: width 0.4s ease, height 0.4s ease;
-    }
-
-    button:active::after, .btn:active::after {
-      width: 200%;
-      height: 200%;
-      transition: 0s;
-    }
-
-    button:hover, .btn:hover {
-      background: var(--secondary-color);
-      transform: translateY(-3px);
-    }
-
-    /* पासवर्ड स्ट्रेंथ इंडिकेटर */
-    .strength-meter {
-      margin: 20px 0;
-    }
-
-    .strength-indicator {
-      height: 15px;
-      width: 100%;
-      background: #FF0000;
-      border-radius: 50px;
-      margin: 10px 0;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .strength-indicator::after {
+    .container::before {
       content: '';
       position: absolute;
       top: 0;
       left: 0;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .header h2 {
+      font-size: 2rem;
+      background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .header h3 {
+      font-size: 1rem;
+      color: #7f8c8d;
+      font-weight: 400;
+      position: relative;
+    }
+
+    .header h3::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 3px;
+      background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+      border-radius: 3px;
+    }
+
+    /* Input Group */
+    .input-group {
+      margin-bottom: 24px;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .input-icon {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 16px 12px 44px;
+      border: 2px solid #e0e6ed;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      background: #f8fafc;
+      transition: all 0.3s ease;
+    }
+
+    input:focus {
+      border-color: #2575fc;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.2);
+      background: white;
+    }
+
+    .input-icon i {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6a11cb;
+      font-size: 1.1rem;
+    }
+
+    /* Password Toggle Button */
+    .toggle-password {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #7f8c8d;
+      font-size: 1.1rem;
+    }
+
+    .toggle-password:hover {
+      color: #6a11cb;
+    }
+
+    /* Buttons */
+    button, .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 4px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    button:hover, .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(106, 17, 203, 0.3);
+    }
+
+    /* Password Strength Meter */
+    .strength-meter {
+      margin: 16px 0;
+    }
+
+    .strength-indicator {
+      height: 10px;
+      background: #f1f5f9;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .strength-indicator::after {
+      content: '';
+      display: block;
       height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
-      transition: width 0.3s ease;
+      width: 0;
+      background: linear-gradient(90deg, #ff6b6b, #ffa502, #2ed573);
+      transition: width 0.5s ease;
     }
 
     .strength-labels {
       display: flex;
       justify-content: space-between;
-      margin-top: 5px;
-      font-size: 0.8rem;
-      color: var(--text-light);
+      font-size: 0.85rem;
+      color: #7f8c8d;
+      margin-top: 8px;
     }
 
-    /* सुझावित पासवर्ड */
+    #strengthScore, #result, #ai-advice, #breach-result {
+      font-size: 0.9rem;
+      color: #2c3e50;
+      margin: 12px 0;
+      padding: 10px;
+      border-radius: 8px;
+      background: rgba(241, 245, 249, 0.5);
+    }
+
+    #strengthScore span, #result span, #ai-advice, #breach-result {
+      font-weight: 600;
+    }
+
+    /* Suggested Password */
     .suggested-password {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin: 15px 0;
+      gap: 12px;
+      margin: 16px 0;
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #e0e6ed;
     }
 
     #suggested-password {
-      color: var(--secondary-color);
-      font-weight: bold;
-      font-size: 1.2rem;
+      color: #6a11cb;
+      font-weight: 600;
+      font-size: 0.95rem;
+      flex-grow: 1;
       word-break: break-all;
     }
 
     .copy-btn {
       background: none;
       border: none;
-      color: var(--primary-color);
-      cursor: pointer;
+      color: #2575fc;
       font-size: 1.2rem;
-      transition: transform 0.2s;
+      cursor: pointer;
+      transition: transform 0.3s ease;
     }
 
     .copy-btn:hover {
-      transform: scale(1.2);
-      color: var(--accent-color);
+      color: #6a11cb;
+      transform: scale(1.1);
     }
 
-    /* फ्लोटिंग बैकग्राउंड बबल्स */
-    .bubbles {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      z-index: -10;
-    }
-
-    .bubbles span {
-      position: absolute;
-      bottom: -150px;
-      background: rgba(98,0,234,0.5);
-      border-radius: 50%;
-      opacity: 0.7;
-      animation: bubbleAnimation linear infinite;
-    }
-
-    /* अलग-अलग बबल्स सेटिंग्स */
-    .bubbles span:nth-child(1) { left: 5%; width: 20px; height: 20px; animation-duration: 8s; animation-delay: 0s; }
-    .bubbles span:nth-child(2) { left: 20%; width: 30px; height: 30px; animation-duration: 10s; animation-delay: 2s; }
-    .bubbles span:nth-child(3) { left: 35%; width: 25px; height: 25px; animation-duration: 12s; animation-delay: 4s; }
-    .bubbles span:nth-child(4) { left: 50%; width: 40px; height: 40px; animation-duration: 9s; animation-delay: 1s; }
-    .bubbles span:nth-child(5) { left: 65%; width: 20px; height: 20px; animation-duration: 7s; animation-delay: 3s; }
-    .bubbles span:nth-child(6) { left: 80%; width: 35px; height: 35px; animation-duration: 11s; animation-delay: 2s; }
-    .bubbles span:nth-child(7) { left: 90%; width: 45px; height: 45px; animation-duration: 13s; animation-delay: 5s; }
-    .bubbles span:nth-child(8) { left: 75%; width: 25px; height: 25px; animation-duration: 8s; animation-delay: 5s; }
-    .bubbles span:nth-child(9) { left: 10%; width: 45px; height: 45px; animation-duration: 13s; animation-delay: 0s; }
-    .bubbles span:nth-child(10) { left: 40%; width: 45px; height: 45px; animation-duration: 3s; animation-delay: 5s; }
-
-    /* बबल एनिमेशन */
-    @keyframes bubbleAnimation {
-      0% {
-        transform: translateY(0) scale(1);
-        opacity: 0.7;
-      }
-      50% {
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(-120vh) scale(1.5);
-        opacity: 0;
-      }
-    }
-
-    /* फीचर कार्ड्स */
+    /* Feature Cards */
     .feature-cards {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 15px;
-      margin: 25px 0;
+      gap: 20px;
+      margin: 24px 0;
     }
 
     .feature-card {
-      background: rgba(255, 255, 255, 0.7);
-      border-radius: 15px;
-      padding: 20px;
+      background: white;
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
       transition: all 0.3s ease;
-      border-left: 5px solid var(--primary-color);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      position: relative;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(to bottom, #6a11cb, #2575fc);
     }
 
     .feature-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
     }
 
     .feature-card h4 {
-      color: var(--primary-color);
+      font-size: 1.1rem;
+      color: #2c3e50;
+      font-weight: 600;
       margin-bottom: 10px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
+    }
+
+    .feature-card h4 i {
+      color: #6a11cb;
     }
 
     .feature-card p {
       font-size: 0.9rem;
-      color: #555;
+      color: #7f8c8d;
+      margin-bottom: 12px;
     }
 
     .read-more {
-      display: inline-block;
-      margin-top: 10px;
-      color: var(--primary-color);
+      color: #2575fc;
+      font-size: 0.9rem;
+      font-weight: 600;
       text-decoration: none;
-      font-weight: bold;
-      transition: color 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.3s ease;
     }
 
     .read-more:hover {
-      color: var(--accent-color);
+      color: #6a11cb;
       text-decoration: underline;
     }
 
-    /* डार्क मोड स्टाइल */
+    /* Dark Mode Toggle */
+    .dark-mode-toggle {
+      display: flex;
+      justify-content: center;
+      margin-top: 24px;
+    }
+
+    /* Dark Mode */
     .dark-mode {
-      background: var(--bg-dark);
-      color: var(--text-dark);
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: #e2e8f0;
     }
 
     .dark-mode .container {
-      background: var(--card-bg-dark);
-      box-shadow: 0 20px 30px rgba(0, 0, 0, 0.5);
+      background: rgba(15, 23, 42, 0.95);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .dark-mode .input-group {
+      background: rgba(30, 41, 59, 0.8);
+      border-color: rgba(255, 255, 255, 0.05);
     }
 
     .dark-mode input {
-      background: rgba(255, 255, 255, 0.1);
-      border: 2px solid var(--secondary-color);
-      color: var(--text-dark);
+      background: #1e293b;
+      border-color: #334155;
+      color: #e2e8f0;
     }
 
-    .dark-mode button, .dark-mode .btn {
-      background: var(--secondary-color);
-      color: var(--text-dark);
+    .dark-mode input:focus {
+      box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.3);
     }
 
     .dark-mode .strength-indicator {
-      background: #444;
-    }
-
-    .dark-mode .strength-indicator::after {
-      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      background: #1e293b;
     }
 
     .dark-mode .feature-card {
-      background: rgba(30, 30, 30, 0.7);
-      border-left: 5px solid var(--secondary-color);
+      background: #1e293b;
+      border-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .dark-mode .feature-card h4 {
+      color: #e2e8f0;
     }
 
     .dark-mode .feature-card p {
-      color: #ccc;
+      color: #94a3b8;
     }
 
-    .dark-mode .read-more {
-      color: var(--secondary-color);
+    .dark-mode #strengthScore,
+    .dark-mode #result,
+    .dark-mode #ai-advice,
+    .dark-mode #breach-result {
+      color: #e2e8f0;
+      background: rgba(30, 41, 59, 0.8);
     }
 
-    /* मीडिया क्वेरी - डेस्कटॉप */
-    @media screen and (min-width: 768px) {
-      h2 {
-        font-size: 4rem;
+    .dark-mode .suggested-password {
+      background: #1e293b;
+      border-color: #334155;
+    }
+
+    .dark-mode #suggested-password {
+      color: #818cf8;
+    }
+
+    .dark-mode .copy-btn {
+      color: #818cf8;
+    }
+
+    .dark-mode .copy-btn:hover {
+      color: #a5b4fc;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .container > * {
+      animation: fadeIn 0.6s ease forwards;
+    }
+
+    .header { animation-delay: 0.1s; }
+    .input-group { animation-delay: 0.2s; }
+    .feature-cards { animation-delay: 0.3s; }
+    .dark-mode-toggle { animation-delay: 0.4s; }
+
+    /* Responsive Design */
+    @media (min-width: 768px) {
+      body {
+        padding: 24px;
       }
-      h3 {
-        font-size: 2rem;
-      }
-      p, input, button {
-        font-size: 1.1rem;
-      }
+
       .container {
-        padding: 40px;
+        max-width: 900px;
+        padding: 32px;
       }
-      
+
+      .header h2 {
+        font-size: 2.8rem;
+      }
+
+      .header h3 {
+        font-size: 1.3rem;
+      }
+
+      .input-group {
+        padding: 24px;
+      }
+
+      button, .btn {
+        width: auto;
+        padding: 14px 28px;
+      }
+
       .feature-cards {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+      }
+
+      .feature-card {
+        padding: 20px;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .container {
+        max-width: 1100px;
+      }
+
+      .header h2 {
+        font-size: 3.2rem;
+      }
+
+      .input-group {
+        padding: 32px;
+      }
+
+      .feature-cards {
+        gap: 32px;
       }
     }
   </style>
 </head>
 <body>
-  <!-- बैकग्राउंड वीडियो (Parallax Effect के साथ) -->
-  <div class="video-container">
-    <video autoplay muted loop id="bg-video">
-      <source src="your-video.mp4" type="video/mp4">
-      आपका ब्राउज़र वीडियो सपोर्ट नहीं करता।
-    </video>
-    <div class="video-overlay"></div>
-  </div>
-
-  <!-- फ्लोटिंग बैकग्राउंड बबल्स -->
-  <div class="bubbles">
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
-
-  <!-- मुख्य कंटेनर -->
   <div class="container">
     <div class="header">
       <h2><i class="fas fa-lock"></i> SecurePass</h2>
       <h3>पासवर्ड स्ट्रेंथ चेकर और मैनेजर</h3>
     </div>
 
-    <!-- पासवर्ड चेकर सेक्शन -->
+    <!-- Password Checker Section -->
     <div class="input-group">
       <div class="input-icon">
         <i class="fas fa-key"></i>
-        <input type="password" id="password" placeholder="अपना पासवर्ड दर्ज करें" oninput="checkStrength()">
+        <input type="password" id="password" placeholder="अपना पासवर्ड दर्ज करें" oninput="checkStrength()" aria-label="पासवर्ड दर्ज करें">
+        <button type="button" class="toggle-password" onclick="togglePasswordVisibility()" aria-label="पासवर्ड दिखाएँ/छुपाएँ">
+          <i id="toggleIcon" class="fas fa-eye"></i>
+        </button>
       </div>
-      
+
       <div class="input-icon">
         <i class="fas fa-ruler"></i>
-        <input type="number" id="passwordLength" min="12" max="32" value="16" placeholder="पासवर्ड लंबाई (12-32)" oninput="suggestStrongPassword()">
+        <input type="number" id="passwordLength" min="12" max="32" value="16" placeholder="पासवर्ड लंबाई (12-32)" oninput="suggestStrongPassword()" aria-label="पासवर्ड लंबाई">
       </div>
 
       <div class="strength-meter">
@@ -480,29 +493,29 @@
           <span>मजबूत</span>
         </div>
       </div>
-      
+
       <p id="result"><i class="fas fa-info-circle"></i> <span>पासवर्ड की ताकत जांचने के लिए पासवर्ड दर्ज करें</span></p>
-      <p><strong>AI सलाह:</strong> <span id="ai-advice"></span></p>
-      
+      <p id="ai-advice"><strong><i class="fas fa-robot"></i> AI सलाह:</strong> <span>पासवर्ड दर्ज करने पर सलाह दिखाई जाएगी</span></p>
+
       <button onclick="suggestStrongPassword()">
         <i class="fas fa-lightbulb"></i> मजबूत पासवर्ड सुझाएं
       </button>
-      
+
       <div class="suggested-password">
         <i class="fas fa-clipboard"></i>
-        <span id="suggested-password"></span>
-        <button class="copy-btn" onclick="copySuggestedPassword()">
+        <span id="suggested-password">पासवर्ड सुझाने के लिए बटन दबाएं</span>
+        <button class="copy-btn" onclick="copySuggestedPassword()" aria-label="सुझाया गया पासवर्ड कॉपी करें">
           <i class="fas fa-copy"></i>
         </button>
       </div>
-      
+
       <button onclick="checkBreach()">
         <i class="fas fa-search"></i> पासवर्ड लीक जांचें
       </button>
-      <p id="breach-result"></p>
+      <p id="breach-result"><i class="fas fa-shield-alt"></i> लीक चेक करने के लिए बटन दबाएं</p>
     </div>
-    
-    <!-- फीचर कार्ड्स -->
+
+    <!-- Feature Cards -->
     <div class="feature-cards">
       <div class="feature-card">
         <h4><i class="fas fa-robot"></i> AI पासवर्ड सलाहकार</h4>
@@ -510,37 +523,59 @@
         <button class="btn" onclick="Chatbot()">
           <i class="fas fa-comments"></i> AI के साथ चैट करें
         </button>
-        <a href="GPT.html" class="read-more">और पढ़ें...</a>
+        <a href="GPT.html" class="read-more">और पढ़ें <i class="fas fa-arrow-right"></i></a>
       </div>
-      
+
       <div class="feature-card">
         <h4><i class="fas fa-shield-alt"></i> लीक चेकर</h4>
         <p>जांचें कि आपका पासवर्ड किसी ज्ञात डेटा उल्लंघन में लीक हुआ है या नहीं।</p>
         <button class="btn" onclick="checkBreach()">
           <i class="fas fa-search"></i> पासवर्ड लीक जांचें
         </button>
-        <a href="Password breach.html" class="read-more">और पढ़ें...</a>
+        <a href="Password breach.html" class="read-more">और पढ़ें <i class="fas fa-arrow-right"></i></a>
       </div>
-      
+
       <div class="feature-card">
         <h4><i class="fas fa-database"></i> पासवर्ड मैनेजर</h4>
         <p>हम एक सुरक्षित स्थानीय पासवर्ड मैनेजर विकसित कर रहे हैं जो आपके पासवर्ड को एन्क्रिप्शन के साथ सुरक्षित रखता है।</p>
         <button class="btn" onclick="openMyPage()">
           <i class="fas fa-lock-open"></i> सुरक्षित पासवर्ड मैनेजर
         </button>
-        <a href="Password.html" class="read-more">और पढ़ें...</a>
+        <a href="Password.html" class="read-more">और पढ़ें <i class="fas fa-arrow-right"></i></a>
+      </div>
+
+      <div class="feature-card">
+        <h4><i class="fas fa-fish"></i> फिशिंग चेकर</h4>
+        <p>हमारा फिशिंग वेबसाइट चेकर सिस्टम आपके लिए सुरक्षित ब्राउज़िंग सुनिश्चित करता है।</p>
+        <button class="btn" onclick="fishinghtml()">
+          <i class="fas fa-lock-open"></i> फिशिंग चेकर
+        </button>
+        <a href="fish.html" class="read-more">और पढ़ें <i class="fas fa-arrow-right"></i></a>
       </div>
     </div>
     
-    <!-- डार्क मोड टॉगल -->
-    <button onclick="toggleDarkMode()">
-      <i class="fas fa-moon"></i> डार्क मोड टॉगल करें
-    </button>
+    <div class="feature-card">
+  <h4><i class="fas fa-brain"></i> Advance Tools</4>
+  <p>
+    हमारे इस सिस्टम के द्वारा कुछ ऐडवांस टूल्स दिये गये हे
+    । जो आपकी सुरक्षा को ओर बढा सकते हे।
+  </p>
+  
+  <button class="btn" onclick="Advancetoolshtml()">
+    <i class="fas fa-lock-open"></i> Advance  Tools
+  </button>
+  
+</div>
+</div>
+
+    <!-- Dark Mode Toggle -->
+    <div class="dark-mode-toggle">
+      <button onclick="toggleDarkMode()">
+        <i class="fas fa-moon"></i> डार्क मोड टॉगल करें
+      </button>
+    </div>
   </div>
 
-  <!-- जावास्क्रिप्ट -->
-  <script src="main.js">
-
-// पेज लोड पर कोई पासवर्ड दिखाने की जरूरत नहीं, इसलिए showPasswords हटाया</script>
+  <script src="main.js"></script>
 </body>
 </html>
