@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>उन्नत हिंदी चैटबॉट (TensorFlow.js)</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #3e8e41;
+            --user-message-bg: #e3f2fd;
+            --bot-message-bg: #ffffff;
+            --dark-mode-bg: #121212;
+            --dark-mode-text: #e0e0e0;
+            --dark-mode-card: #1e1e1e;
+        }
+        
+        body {
+            font-family: 'Arial', 'Noto Sans Devanagari', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            background-color: #f5f5f5;
+            transition: background-color 0.3s;
+        }
+        
+        body.dark-mode {
+            background-color: var(--dark-mode-bg);
+            color: var(--dark-mode-text);
+        }
+        
+        .chat-container {
+            width: 100%;
+            max-width: 600px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: background-color 0.3s;
+        }
+        
+        .dark-mode .chat-container {
+            background-color: var(--dark-mode-card);
+        }
+        
+        .chat-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.2em;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-box {
+            height: 400px;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: #f9f9f9;
+            transition: background-color 0.3s;
+        }
+        
+        .dark-mode .chat-box {
+            background-color: #1a1a1a;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            line-height: 1.4;
+            position: relative;
+            animation: fadeIn 0.3s ease-in-out;
+            word-wrap: break-word;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .user-message {
+            background-color: var(--user-message-bg);
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .dark-mode .user-message {
+            background-color: #2a3a4a;
+            color: var(--dark-mode-text);
+        }
+        
+        .bot-message {
+            background-color: var(--bot-message-bg);
+            margin-right: auto;
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+        }
+        
+        .dark-mode .bot-message {
+            background-color: #2d2d2d;
+            color: var(--dark-mode-text);
+            box-shadow: 0 1px 1px rgba(0,0,0,0.3);
+        }
+        
+        .input-area {
+            display: flex;
+            padding: 10px;
+            background-color: white;
+            border-top: 1px solid #eee;
+            transition: background-color 0.3s;
+        }
+        
+        .dark-mode .input-area {
+            background-color: var(--dark-mode-card);
+            border-top: 1px solid #333;
+        }
+        
+        #user-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .dark-mode #user-input {
+            background-color: #333;
+            border-color: #444;
+            color: var(--dark-mode-text);
+        }
+        
+        #send-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0 20px;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        #send-button:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .loading {
+            color: #666;
+            font-style: italic;
+            text-align: center;
+            padding: 10px;
+        }
+        
+        .dark-mode .loading {
+            color: #aaa;
+        }
+        
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-top: 1px solid #ddd;
+            transition: all 0.3s;
+        }
+        
+        .dark-mode .suggestions {
+            background-color: #252525;
+            border-top: 1px solid #444;
+        }
+        
+        .suggestion-btn {
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 15px;
+            padding: 8px 12px;
+            margin: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .dark-mode .suggestion-btn {
+            background-color: #3a3a3a;
+            color: var(--dark-mode-text);
+        }
+        
+        .suggestion-btn:hover {
+            background-color: #d0d0d0;
+            transform: translateY(-2px);
+        }
+        
+        .dark-mode .suggestion-btn:hover {
+            background-color: #4a4a4a;
+        }
+        
+        .typing-indicator {
+            display: flex;
+            padding: 10px;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #888;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+        
+        .dark-mode .typing-dot {
+            background-color: #aaa;
+        }
+        
+        .typing-dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+        
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typingAnimation {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+        
+        .feedback-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 5px;
+        }
+        
+        .feedback-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 10px;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        
+        .feedback-btn:hover {
+            opacity: 1;
+        }
+        
+        .settings-btn, .dark-mode-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            transition: right 0.3s;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .dark-mode .settings-panel {
+            background-color: var(--dark-mode-card);
+            color: var(--dark-mode-text);
+        }
+        
+        .settings-panel.active {
+            right: 0;
+        }
+        
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .close-settings {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .setting-item {
+            margin-bottom: 15px;
+        }
+        
+        .setting-item label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        select, input[type="range"] {
+            width: 100%;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
+        .dark-mode select, .dark-mode input[type="range"] {
+            background-color: #333;
+            border-color: #444;
+            color: var(--dark-mode-text);
+        }
+        
+        .media-attachment {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 5px;
+        }
+        
+        .conversation-history {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        
+        .dark-mode .conversation-history {
+            border-color: #444;
+        }
+        
+        .history-item {
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+        
+        .voice-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        .recording {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .dark-mode .progress-container {
+            background-color: #333;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: var(--primary-color);
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .personality-indicator {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .dark-mode .personality-indicator {
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <span>उन्नत हिंदी चैटबॉट</span>
+            <div class="header-actions">
+                <button class="dark-mode-btn" onclick="toggleDarkMode()">🌓</button>
+                <button class="settings-btn tooltip" onclick="toggleSettings()">
+                    ⚙️
+                    <span class="tooltiptext">सेटिंग्स</span>
+                </button>
+            </div>
+        </div>
+        <div class="chat-box" id="chat-box"></div>
+        <div class="suggestions" id="suggestions">
+            <button class="suggestion-btn" onclick="insertSuggestion('नमस्ते')">नमस्ते</button>
+            <button class="suggestion-btn" onclick="insertSuggestion('तुम कौन हो')">तुम कौन हो</button>
+            <button class="suggestion-btn" onclick="insertSuggestion('आज की तारीख क्या है')">आज की तारीख</button>
+            <button class="suggestion-btn" onclick="insertSuggestion('मौसम जानकारी')">मौसम जानकारी</button>
+        </div>
+        <div class="input-area">
+            <button class="voice-btn tooltip" id="voice-btn" onclick="toggleVoiceInput()">
+                🎤
+                <span class="tooltiptext">वॉइस इनपुट</span>
+            </button>
+            <input type="text" id="user-input" placeholder="अपना संदेश लिखें..." 
+                   onkeydown="if(event.key === 'Enter') sendMessage()">
+            <button id="send-button" onclick="sendMessage()">भेजें</button>
+        </div>
+    </div>
+
+    <!-- सेटिंग्स पैनल -->
+    <div class="settings-panel" id="settings-panel">
+        <div class="settings-header">
+            <h3>सेटिंग्स</h3>
+            <button class="close-settings" onclick="toggleSettings()">×</button>
+        </div>
+        
+        <div class="setting-item">
+            <label for="voice-input">वॉइस इनपुट</label>
+            <select id="voice-input">
+                <option value="off">बंद</option>
+                <option value="on">चालू</option>
+            </select>
+        </div>
+        
+        <div class="setting-item">
+            <label for="response-speed">प्रतिक्रिया गति</label>
+            <select id="response-speed">
+                <option value="fast">तेज</option>
+                <option value="normal" selected>सामान्य</option>
+                <option value="slow">धीमा</option>
+            </select>
+        </div>
+        
+        <div class="setting-item">
+            <label for="bot-personality">बॉट का व्यक्तित्व</label>
+            <select id="bot-personality">
+                <option value="professional">पेशेवर</option>
+                <option value="friendly" selected>मित्रवत</option>
+                <option value="humorous">हास्यपूर्ण</option>
+                <option value="poetic">काव्यात्मक</option>
+            </select>
+        </div>
+        
+        <div class="setting-item">
+            <label for="font-size">फॉन्ट आकार</label>
+            <input type="range" id="font-size" min="12" max="24" value="16" onchange="changeFontSize(this.value)">
+            <span id="font-size-value">16px</span>
+        </div>
+        
+        <div class="setting-item">
+            <label>वार्तालाप इतिहास</label>
+            <div class="conversation-history" id="conversation-history">
+                कोई इतिहास उपलब्ध नहीं
+            </div>
+            <button onclick="exportConversation()">निर्यात करें</button>
+            <button onclick="clearHistory()">साफ करें</button>
+        </div>
+        
+        <div class="setting-item">
+            <label>प्रगति</label>
+            <div class="progress-container">
+                <div class="progress-bar" id="model-progress"></div>
+            </div>
+            <span id="progress-text">मॉडल लोड हो रहा है...</span>
+        </div>
+        
+        <button onclick="resetConversation()">वार्तालाप रीसेट करें</button>
+        <button onclick="resetPreferences()">प्राथमिकताएँ रीसेट करें</button>
+    </div>
+
+    <!-- TensorFlow.js लाइब्रेरी -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.18.0/dist/tf.min.js"></script>
+    <!-- TensorFlow.js के लिए Universal Sentence Encoder -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/universal-sentence-encoder@1.3.2/dist/universal-sentence-encoder.min.js"></script>
+    <!-- भावना विश्लेषण के लिए -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/sentiment"></script>
+    
+    <script>
+        // मुख्य एप्लिकेशन वर्ग
+        class HindiChatbot {
+            constructor() {
+                this.model = null;
+                this.encoder = null;
+                this.sentimentModel = null;
+                this.isTyping = false;
+                this.knowledgeBase = [];
+                this.conversationContext = {
+                    lastQuestion: "",
+                    userPreferences: {
+                        name: "",
+                        interests: [],
+                        preferredLanguage: "hindi"
+                    },
+                    conversationHistory: [],
+                    sentimentScore: 0,
+                    waitingFor: null,
+                    personality: "friendly"
+                };
+                this.recognition = null;
+                this.isRecording = false;
+                this.darkMode = false;
+            }
+
+            // पेज लोड होने पर इनिशियलाइज़ेशन
+            async init() {
+                this.updateProgress(10, "ज्ञान आधार लोड हो रहा है...");
+                await this.loadKnowledgeBase();
+                
+                this.updateProgress(30, "भाषा मॉडल लोड हो रहे हैं...");
+                await this.loadLanguageModels();
+                
+                this.updateProgress(70, "भावना विश्लेषण मॉडल लोड हो रहा है...");
+                await this.loadSentimentModel();
+                
+                this.updateProgress(90, "उपयोगकर्ता प्राथमिकताएँ लोड हो रही हैं...");
+                this.loadUserPreferences();
+                this.loadLearnedResponses();
+                
+                this.updateProgress(100, "तैयार!");
+                setTimeout(() => {
+                    document.getElementById('model-progress').style.display = 'none';
+                    document.getElementById('progress-text').style.display = 'none';
+                }, 1000);
+                
+                this.addBotMessage("नमस्ते! मैं एक उन्नत हिंदी चैटबॉट हूँ। आप मुझसे कुछ भी पूछ सकते हैं!");
+                this.initVoiceRecognition();
+            }
+
+            // प्रगति बार अपडेट करें
+            updateProgress(percent, message) {
+                document.getElementById('model-progress').style.width = `${percent}%`;
+                document.getElementById('progress-text').textContent = message;
+            }
+
+            // ज्ञान आधार लोड करें
+            async loadKnowledgeBase() {
+                try {
+                    const response = await fetch('knowledgeBase.json');
+                    if (!response.ok) throw new Error('Failed to load knowledgeBase.json');
+                    
+                    const data = await response.json();
+                    this.knowledgeBase = data.map(item => {
+                        if (typeof item.answer === 'string' && item.answer.startsWith('function:')) {
+                            const funcName = item.answer.replace('function:', '');
+                            item.answer = this.functionMappings[funcName] || item.answer;
+                        }
+                        if (item.followUp && item.followUp.handler.startsWith('function:')) {
+                            const funcName = item.followUp.handler.replace('function:', '');
+                            item.followUp.handler = this.functionMappings[funcName] || item.followUp.handler;
+                        }
+                        return item;
+                    });
+                } catch (error) {
+                    console.error('Error loading knowledge base:', error);
+                    this.addBotMessage('ज्ञान आधार लोड करने में त्रुटि। डिफॉल्ट प्रतिक्रियाएँ उपयोग की जाएंगी।');
+                }
+            }
+
+            // भाषा मॉडल लोड करें
+            async loadLanguageModels() {
+                try {
+                    this.encoder = await use.load();
+                    this.model = await use.loadQnA();
+                } catch (error) {
+                    console.error("मॉडल लोडिंग त्रुटि:", error);
+                    this.addBotMessage("भाषा मॉडल लोड करने में समस्या आई। कुछ सुविधाएँ सीमित हो सकती हैं।");
+                }
+            }
+
+            // भावना विश्लेषण मॉडल लोड करें
+            async loadSentimentModel() {
+                try {
+                    this.sentimentModel = await tf.loadLayersModel(
+                        'https://storage.googleapis.com/tfjs-models/tfjs/sentiment_cnn_v1/model.json'
+                    );
+                } catch (error) {
+                    console.error("भावना मॉडल लोडिंग त्रुटि:", error);
+                }
+            }
+
+            // वॉइस रिकग्निशन इनिशियलाइज़ करें
+            initVoiceRecognition() {
+                if ('webkitSpeechRecognition' in window) {
+                    this.recognition = new webkitSpeechRecognition();
+                    this.recognition.continuous = false;
+                    this.recognition.interimResults = false;
+                    this.recognition.lang = 'hi-IN';
+                    
+                    this.recognition.onresult = (event) => {
+                        const transcript = event.results[0][0].transcript;
+                        document.getElementById('user-input').value = transcript;
+                        this.isRecording = false;
+                        document.getElementById('voice-btn').classList.remove('recording');
+                    };
+                    
+                    this.recognition.onerror = (event) => {
+                        console.error("वॉइस रिकग्निशन त्रुटि:", event.error);
+                        this.isRecording = false;
+                        document.getElementById('voice-btn').classList.remove('recording');
+                    };
+                } else {
+                    console.warn("वॉइस रिकग्निशन सपोर्ट नहीं है");
+                }
+            }
+
+            // वॉइस इनपुट टॉगल करें
+            toggleVoiceInput() {
+                if (!this.recognition) {
+                    alert("आपके ब्राउज़र में वॉइस रिकग्निशन सपोर्ट नहीं है");
+                    return;
+                }
+                
+                if (this.isRecording) {
+                    this.recognition.stop();
+                    this.isRecording = false;
+                    document.getElementById('voice-btn').classList.remove('recording');
+                } else {
+                    this.recognition.start();
+                    this.isRecording = true;
+                    document.getElementById('voice-btn').classList.add('recording');
+                    this.addBotMessage("मैं सुन रहा हूँ...");
+                }
+            }
+
+            // संदेश भेजें
+            async sendMessage() {
+                const userInput = document.getElementById('user-input').value.trim();
+                if (!userInput) return;
+                
+                this.addUserMessage(userInput);
+                document.getElementById('user-input').value = '';
+                this.showTypingIndicator();
+                
+                try {
+                    this.updateContext(userInput);
+                    await this.analyzeSentiment(userInput);
+                    
+                    const response = await this.getBotResponse(userInput);
+                    this.hideTypingIndicator();
+                    this.addBotMessage(response);
+                    
+                    this.conversationContext.conversationHistory[
+                        this.conversationContext.conversationHistory.length - 1
+                    ].bot = response;
+                    
+                    this.updateSuggestions();
+                    this.updateConversationHistoryUI();
+                } catch (error) {
+                    this.hideTypingIndicator();
+                    this.addBotMessage("माफ कीजिए, मैं आपके प्रश्न का उत्तर नहीं दे पा रहा हूँ।");
+                    console.error("त्रुटि:", error);
+                }
+            }
+
+            // बॉट प्रतिक्रिया प्राप्त करें
+            async getBotResponse(userInput) {
+                // व्यक्तित्व सेटिंग अपडेट करें
+                this.conversationContext.personality = document.getElementById('bot-personality').value;
+                
+                // फॉलो-अप चेक
+                if (this.conversationContext.waitingFor) {
+                    const lastQuestionObj = this.knowledgeBase.find(q => 
+                        q.question === this.conversationContext.lastQuestion);
+                    
+                    if (lastQuestionObj && lastQuestionObj.followUp) {
+                        const result = await lastQuestionObj.followUp.handler(userInput);
+                        this.conversationContext.waitingFor = null;
+                        return this.formatResponse(result);
+                    }
+                }
+                
+                // ज्ञान आधार में एक्सैक्ट मैच
+                const exactMatch = this.knowledgeBase.find(item => 
+                    item.question.toLowerCase() === userInput.toLowerCase());
+                
+                if (exactMatch) {
+                    if (typeof exactMatch.answer === 'function') {
+                        return this.formatResponse(exactMatch.answer(this.conversationContext));
+                    }
+                    
+                    if (exactMatch.followUp) {
+                        this.conversationContext.waitingFor = exactMatch.followUp.field;
+                        this.conversationContext.lastQuestion = exactMatch.question;
+                    }
+                    
+                    return this.formatResponse(exactMatch.answer);
+                }
+                
+                // सिमेंटिक मैचिंग
+                if (this.encoder && this.model) {
+                    const input = {
+                        queries: [userInput],
+                        responses: this.knowledgeBase.map(item => item.question)
+                    };
+                    
+                    const embeddings = await this.model.embed(input);
+                    const scores = tf.matMul(
+                        embeddings['queryEmbedding'],
+                        embeddings['responseEmbedding'],
+                        false, true
+                    ).dataSync();
+                    
+                    let maxScore = -1;
+                    let bestMatchIndex = -1;
+                    
+                    for (let i = 0; i < scores.length; i++) {
+                        if (scores[i] > maxScore) {
+                            maxScore = scores[i];
+                            bestMatchIndex = i;
+                        }
+                    }
+                    
+                    if (maxScore > 0.5) {
+                        const matchedQuestion = this.knowledgeBase[bestMatchIndex];
+                        
+                        if (matchedQuestion.followUp) {
+                            this.conversationContext.waitingFor = matchedQuestion.followUp.field;
+                            this.conversationContext.lastQuestion = matchedQuestion.question;
+                        }
+                        
+                        if (typeof matchedQuestion.answer === 'function') {
+                            return this.formatResponse(matchedQuestion.answer(this.conversationContext));
+                        }
+                        return this.formatResponse(matchedQuestion.answer);
+                    }
+                }
+                
+                // भावना-आधारित प्रतिक्रिया
+                if (this.conversationContext.sentimentScore < 0.3) {
+                    const negativeResponses = {
+                        professional: "मुझे लगता है आप नाखुश हैं। कृपया बताएं कि मैं कैसे मदद कर सकता हूँ?",
+                        friendly: "लगता है आप परेशान हैं। क्या मैं कुछ कर सकता हूँ?",
+                        humorous: "ओहो! किसने आपका मूड खराब किया? चलो मैं मदद करता हूँ!",
+                        poetic: "क्रोध के बादल छाए हैं, शांति की वर्षा होने दो। बताइए, कैसे सेवा करूँ?"
+                    };
+                    return negativeResponses[this.conversationContext.personality] || 
+                        "मुझे लगता है आप नाराज़ हैं। क्या मैं आपकी किसी तरह मदद कर सकता हूँ?";
+                }
+                
+                // डिफॉल्ट प्रतिक्रियाएँ
+                const defaultResponses = {
+                    professional: [
+                        "माफ कीजिए, मैं इस प्रश्न को समझ नहीं पाया। क्या आप इसे अलग तरीके से पूछ सकते हैं?",
+                        "मैं अभी इस प्रश्न का उत्तर नहीं दे सकता। क्या आप कोई अन्य प्रश्न पूछना चाहेंगे?"
+                    ],
+                    friendly: [
+                        "मुझे समझ नहीं आया। क्या आप दोबारा कह सकते हैं?",
+                        "हम्म... मैं इस बारे में नहीं जानता। कुछ और पूछिए!"
+                    ],
+                    humorous: [
+                        "अरे भई! यह तो मेरी समझ से बाहर है। कुछ आसान सवाल पूछो!",
+                        "मेरी बुद्धि यहाँ आकर ठिठक गई है। कोई दूसरा सवाल?"
+                    ],
+                    poetic: [
+                        "इस प्रश्न का उत्तर मेरी ज्ञान-गंगा में नहीं बहता। कुछ और पूछो प्रिय!",
+                        "मेरी बुद्धि की सीमा यहीं तक है। अन्य जिज्ञासा लेकर आइए।"
+                    ]
+                };
+                
+                const responses = defaultResponses[this.conversationContext.personality] || [
+                    "मुझे इस बारे में जानकारी नहीं है। कृपया मुझे सिखाएं - अगर आप चाहें तो सही उत्तर लिखकर भेज सकते हैं और मैं इसे सीख लूँगा।"
+                ];
+                
+                return this.formatResponse(responses[Math.floor(Math.random() * responses.length)]);
+            }
+
+            // प्रतिक्रिया को फॉर्मेट करें (व्यक्तित्व के अनुसार)
+            formatResponse(response) {
+                if (this.conversationContext.personality === 'poetic') {
+                    // काव्यात्मक प्रतिक्रियाएँ जोड़ें
+                    const poeticEnhancements = [
+                        "\n\n- ज्ञान का दीपक जलता रहे",
+                        "\n\n- सत्यम, शिवम, सुंदरम",
+                        "\n\n- ज्ञान गंगा की यह धारा",
+                        "\n\n- बुद्धि का यह प्रकाश सदा बना रहे"
+                    ];
+                    
+                    if (Math.random() > 0.7) {
+                        response += poeticEnhancements[Math.floor(Math.random() * poeticEnhancements.length)];
+                    }
+                }
+                return response;
+            }
+
+            // भावना विश्लेषण
+            async analyzeSentiment(text) {
+                try {
+                    const inputText = text.trim().toLowerCase().replace(/([।,!?])/g, '').split(' ');
+                    const inputBuffer = tf.browser.fromPixels(inputText);
+                    const prediction = await this.sentimentModel.predict(inputBuffer).data();
+                    this.conversationContext.sentimentScore = prediction[0];
+                } catch (error) {
+                    console.error("भावना विश्लेषण में त्रुटि:", error);
+                }
+            }
+
+            // संदर्भ अपडेट करें
+            updateContext(userInput) {
+                this.conversationContext.conversationHistory.push({
+                    user: userInput,
+                    bot: null,
+                    timestamp: new Date().toISOString(),
+                    sentiment: this.conversationContext.sentimentScore
+                });
+                
+                if (this.conversationContext.conversationHistory.length > 10) {
+                    this.conversationContext.conversationHistory.shift();
+                }
+            }
+
+            // सीखे हुए उत्तर लोड करें
+            loadLearnedResponses() {
+                const learnedResponses = JSON.parse(
+                    localStorage.getItem('learnedResponses') || '[]'
+                );
+                
+                learnedResponses.forEach(response => {
+                    if (!this.knowledgeBase.some(item => item.question === response.question)) {
+                        this.knowledgeBase.push(response);
+                    }
+                });
+            }
+
+            // उपयोगकर्ता प्राथमिकताएँ लोड करें
+            loadUserPreferences() {
+                const savedPreferences = localStorage.getItem('userPreferences');
+                if (savedPreferences) {
+                    this.conversationContext.userPreferences = JSON.parse(savedPreferences);
+                }
+                
+                // UI में सेटिंग्स लोड करें
+                if (this.conversationContext.userPreferences.darkMode) {
+                    this.toggleDarkMode(true);
+                }
+                
+                if (this.conversationContext.userPreferences.fontSize) {
+                    this.changeFontSize(this.conversationContext.userPreferences.fontSize, true);
+                }
+            }
+
+            // उपयोगकर्ता प्राथमिकताएँ सहेजें
+            saveUserPreferences() {
+                localStorage.setItem(
+                    'userPreferences',
+                    JSON.stringify(this.conversationContext.userPreferences)
+                );
+            }
+
+            // वार्तालाप इतिहास UI अपडेट करें
+            updateConversationHistoryUI() {
+                const historyContainer = document.getElementById('conversation-history');
+                historyContainer.innerHTML = '';
+                
+                if (this.conversationContext.conversationHistory.length === 0) {
+                    historyContainer.innerHTML = '<div>कोई इतिहास उपलब्ध नहीं</div>';
+                    return;
+                }
+                
+                this.conversationContext.conversationHistory.forEach((item, index) => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item';
+                    
+                    const time = new Date(item.timestamp).toLocaleTimeString('hi-IN', {
+                        hour: '2-digit', minute: '2-digit'
+                    });
+                    
+                    historyItem.innerHTML = `
+                        <strong>${time}:</strong> ${item.user.substring(0, 30)}${item.user.length > 30 ? '...' : ''}
+                        ${item.bot ? `<br><em>→ ${item.bot.substring(0, 30)}${item.bot.length > 30 ? '...' : ''}</em>` : ''}
+                    `;
+                    
+                    historyContainer.appendChild(historyItem);
+                });
+            }
+
+            // डार्क मोड टॉगल करें
+            toggleDarkMode(force = null) {
+                if (force !== null) {
+                    this.darkMode = force;
+                } else {
+                    this.darkMode = !this.darkMode;
+                }
+                
+                if (this.darkMode) {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+                
+                this.conversationContext.userPreferences.darkMode = this.darkMode;
+                this.saveUserPreferences();
+            }
+
+            // फॉन्ट आकार बदलें
+            changeFontSize(size, initialLoad = false) {
+                document.documentElement.style.fontSize = `${size}px`;
+                document.getElementById('font-size-value').textContent = `${size}px`;
+                
+                if (!initialLoad) {
+                    this.conversationContext.userPreferences.fontSize = size;
+                    this.saveUserPreferences();
+                }
+            }
+
+            // वार्तालाप निर्यात करें
+            exportConversation() {
+                const data = JSON.stringify(this.conversationContext.conversationHistory, null, 2);
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `hindi-chatbot-conversation-${new Date().toISOString()}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            // इतिहास साफ करें
+            clearHistory() {
+                this.conversationContext.conversationHistory = [];
+                this.updateConversationHistoryUI();
+            }
+
+            // वार्तालाप रीसेट करें
+            resetConversation() {
+                this.conversationContext = {
+                    lastQuestion: "",
+                    userPreferences: this.conversationContext.userPreferences,
+                    conversationHistory: [],
+                    sentimentScore: 0,
+                    waitingFor: null,
+                    personality: document.getElementById('bot-personality').value
+                };
+                
+                this.addBotMessage("वार्तालाप रीसेट हो गया है। मैं फिर से तैयार हूँ!");
+                this.updateSuggestions();
+            }
+
+            // प्राथमिकताएँ रीसेट करें
+            resetPreferences() {
+                this.conversationContext.userPreferences = {
+                    name: "",
+                    interests: [],
+                    preferredLanguage: "hindi",
+                    darkMode: false,
+                    fontSize: 16
+                };
+                
+                this.saveUserPreferences();
+                this.toggleDarkMode(false);
+                this.changeFontSize(16);
+                this.addBotMessage("सभी प्राथमिकताएँ रीसेट कर दी गई हैं।");
+            }
+
+            // सुझाव अपडेट करें
+            updateSuggestions() {
+                const suggestionsContainer = document.getElementById('suggestions');
+                suggestionsContainer.innerHTML = '';
+                
+                if (this.conversationContext.waitingFor === 'city') {
+                    const cities = ['दिल्ली', 'मुंबई', 'बैंगलोर', 'चेन्नई', 'जयपुर'];
+                    cities.forEach(city => {
+                        const btn = document.createElement('button');
+                        btn.className = 'suggestion-btn';
+                        btn.textContent = city;
+                        btn.onclick = () => insertSuggestion(city);
+                        suggestionsContainer.appendChild(btn);
+                    });
+                } else {
+                    const defaultSuggestions = [
+                        'नमस्ते', 
+                        'तुम कौन हो', 
+                        'आज की तारीख क्या है',
+                        'समय क्या हुआ है',
+                        'मौसम जानकारी'
+                    ];
+                    
+                    defaultSuggestions.forEach(suggestion => {
+                        const btn = document.createElement('button');
+                        btn.className = 'suggestion-btn';
+                        btn.textContent = suggestion;
+                        btn.onclick = () => insertSuggestion(suggestion);
+                        suggestionsContainer.appendChild(btn);
+                    });
+                }
+            }
+
+            // फंक्शन मैपिंग
+            functionMappings = {
+                "time": () => {
+                    const now = new Date();
+                    const hours = now.getHours();
+                    const minutes = now.getMinutes();
+                    const timeString = `${hours} बजकर ${minutes} मिनट`;
+                    let greeting = "";
+                    
+                    if (hours < 12) greeting = "सुप्रभात";
+                    else if (hours < 18) greeting = "नमस्ते";
+                    else greeting = "शुभ संध्या";
+                    
+                    return `${greeting}! अभी समय है ${timeString}`;
+                },
+                "date": () => {
+                    const now = new Date();
+                    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                    return `आज ${now.toLocaleDateString('hi-IN', options)} है`;
+                },
+                "name": (context) => {
+                    if (context.userPreferences.name) {
+                        return `आपका नाम ${context.userPreferences.name} है`;
+                    }
+                    return "मुझे आपका नाम पता नहीं है। क्या आप मुझे बताएंगे?";
+                },
+                "weather": async (city) => {
+                    return await this.getWeather(city);
+                },
+                "nameHandler": (name) => {
+                    this.conversationContext.userPreferences.name = name;
+                    this.saveUserPreferences();
+                    return `धन्यवाद! मैंने आपका नाम ${name} सहेज लिया है।`;
+                }
+            };
+
+            // मौसम जानकारी
+            async getWeather(city) {
+                const mockWeatherData = {
+                    "delhi": "दिल्ली में आज का मौसम साफ है, अधिकतम तापमान 35°C और न्यूनतम 28°C रहने का अनुमान है।",
+                    "mumbai": "मुंबई में आज बादल छाए रहने के साथ हल्की बारिश की संभावना है, तापमान 30°C के आसपास रहेगा।",
+                    "bangalore": "बैंगलोर में आज हल्की धूप के साथ मौसम सुहावना रहेगा, तापमान 26°C से 32°C के बीच रह सकता है।",
+                    "jaipur": "जयपुर में आज धूप रहेगी, अधिकतम तापमान 38°C तक जा सकता है।",
+                    "chennai": "चेन्नई में आज उमस भरा मौसम रहेगा, तापमान 32°C के आसपास रहने की संभावना है।"
+                };
+                
+                const normalizedCity = city.toLowerCase().trim();
+                return mockWeatherData[normalizedCity] || 
+                    `मुझे ${city} के मौसम की जानकारी उपलब्ध नहीं है। कृपया किसी अन्य शहर का नाम दें।`;
+            }
+
+            // उपयोगकर्ता संदेश जोड़ें
+            addUserMessage(message) {
+                const chatBox = document.getElementById('chat-box');
+                chatBox.innerHTML += `<div class="user-message message">${message}</div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+            
+            // बॉट संदेश जोड़ें
+            addBotMessage(message) {
+                const chatBox = document.getElementById('chat-box');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'bot-message message';
+                messageDiv.innerHTML = message;
+                
+                // व्यक्तित्व संकेतक जोड़ें
+                const personalityIndicator = document.createElement('div');
+                personalityIndicator.className = 'personality-indicator';
+                personalityIndicator.textContent = `व्यक्तित्व: ${this.conversationContext.personality}`;
+                messageDiv.appendChild(personalityIndicator);
+                
+                // फीडबैक बटन
+                const feedbackDiv = document.createElement('div');
+                feedbackDiv.className = 'feedback-buttons';
+                feedbackDiv.innerHTML = `
+                    <button class="feedback-btn" onclick="rateResponse(this, true)">👍</button>
+                    <button class="feedback-btn" onclick="rateResponse(this, false)">👎</button>
+                `;
+                
+                messageDiv.appendChild(feedbackDiv);
+                chatBox.appendChild(messageDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+            
+            // टाइपिंग इंडिकेटर दिखाएं
+            showTypingIndicator() {
+                const chatBox = document.getElementById('chat-box');
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'typing-indicator';
+                typingDiv.id = 'typing-indicator';
+                
+                for (let i = 0; i < 3; i++) {
+                    const dot = document.createElement('div');
+                    dot.className = 'typing-dot';
+                    typingDiv.appendChild(dot);
+                }
+                
+                chatBox.appendChild(typingDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+            
+            // टाइपिंग इंडिकेटर छिपाएं
+            hideTypingIndicator() {
+                const typingIndicator = document.getElementById('typing-indicator');
+                if (typingIndicator) {
+                    typingIndicator.remove();
+                }
+            }
+        }
+
+        // ग्लोबल फंक्शन्स
+        const chatbot = new HindiChatbot();
+        
+        function sendMessage() {
+            chatbot.sendMessage();
+        }
+        
+        function insertSuggestion(text) {
+            document.getElementById('user-input').value = text;
+            document.getElementById('user-input').focus();
+        }
+        
+        function toggleSettings() {
+            const panel = document.getElementById('settings-panel');
+            panel.classList.toggle('active');
+        }
+        
+        function toggleDarkMode() {
+            chatbot.toggleDarkMode();
+        }
+        
+        function toggleVoiceInput() {
+            chatbot.toggleVoiceInput();
+        }
+        
+        function rateResponse(button, isPositive) {
+            const feedbackButtons = button.parentElement.querySelectorAll('.feedback-btn');
+            feedbackButtons.forEach(btn => {
+                btn.style.opacity = '0.5';
+                btn.disabled = true;
+            });
+            
+            button.style.opacity = '1';
+            console.log(`User rated response as ${isPositive ? 'positive' : 'negative'}`);
+        }
+        
+        function changeFontSize(size) {
+            chatbot.changeFontSize(size);
+        }
+        
+        function exportConversation() {
+            chatbot.exportConversation();
+        }
+        
+        function clearHistory() {
+            chatbot.clearHistory();
+        }
+        
+        function resetConversation() {
+            chatbot.resetConversation();
+            toggleSettings();
+        }
+        
+        function resetPreferences() {
+            chatbot.resetPreferences();
+            toggleSettings();
+        }
+
+        // पेज लोड होने पर इनिशियलाइज़ करें
+        window.onload = function() {
+            chatbot.init();
+        };
+    </script>
+</body>
+</html>
